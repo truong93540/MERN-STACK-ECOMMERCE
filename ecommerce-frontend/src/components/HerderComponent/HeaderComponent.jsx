@@ -47,13 +47,18 @@ function HeaderComponent() {
                     <div className="flex items-center cursor-pointer">
                         {user?.access_token ? (
                             <div className="flex gap-4 items-center ml-4">
-                                <div>
-                                    <img
-                                        src={avatar}
-                                        alt="avatar"
-                                        className="h-[40px] w-[40px] rounded-full object-cover"
-                                    />
-                                </div>
+                                {avatar === "" ? (
+                                    <UserIcon />
+                                ) : (
+                                    <div>
+                                        <img
+                                            src={avatar}
+                                            alt="avatar"
+                                            className="h-[40px] w-[40px] rounded-full object-cover"
+                                        />
+                                    </div>
+                                )}
+
                                 <Menu items={userMenu}>
                                     <div className="cursor-pointer">
                                         {userName || user.email}

@@ -82,7 +82,9 @@ const ProfilePage = () => {
 
     return (
         <div className="max-w-6xl text-base mx-auto text-[#000] h-[500px]">
-            <div className="my-[4px]">Thông tin người dùng</div>
+            <div className="my-[4px] font-medium text-lg">
+                Thông tin người dùng
+            </div>
 
             <div className="border w-[600px] mx-auto p-7 rounded-xl gap-7 h-[360px] relative">
                 {isLoading ? (
@@ -106,7 +108,7 @@ const ProfilePage = () => {
                                 onChange={handOnchangeName}
                             />
                         </div>
-                        <div className="flex items-center mt-2">
+                        <div className="flex items-center mt-4">
                             <label
                                 className="font-semibold w-1/6"
                                 htmlFor="email">
@@ -121,7 +123,7 @@ const ProfilePage = () => {
                                 onChange={handOnchangeEmail}
                             />
                         </div>
-                        <div className="flex items-center mt-2">
+                        <div className="flex items-center mt-4">
                             <label
                                 className="font-semibold w-1/6"
                                 htmlFor="phone">
@@ -136,7 +138,7 @@ const ProfilePage = () => {
                                 onChange={handOnchangePhone}
                             />
                         </div>
-                        <div className="flex items-center mt-2">
+                        <div className="flex items-center mt-4">
                             <label
                                 className="font-semibold w-1/6"
                                 htmlFor="address">
@@ -151,7 +153,7 @@ const ProfilePage = () => {
                                 onChange={handOnchangeAddress}
                             />
                         </div>
-                        <div className="flex items-center mt-2">
+                        <div className="flex items-center mt-4">
                             <label
                                 className="font-semibold w-1/6"
                                 htmlFor="avatar">

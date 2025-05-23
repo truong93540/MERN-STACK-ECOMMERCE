@@ -26,6 +26,7 @@ function Menu({
         await UserServices.logoutUser();
         localStorage.removeItem("access_token");
         dispatch(resetUser());
+        navigate("/");
     };
 
     const renderItems = () => {
