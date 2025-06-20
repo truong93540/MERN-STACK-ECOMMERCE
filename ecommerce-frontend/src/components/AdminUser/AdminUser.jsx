@@ -1,0 +1,507 @@
+import ButtonComponent from "../ButtonComponent/ButtonComponent";
+import { AiOutlineDelete, AiOutlineForm, AiOutlinePlus } from "react-icons/ai";
+import TableComponent from "../TableComponent/TableComponent";
+import InputComponent from "../InputComponent/InputComponent";
+import { MoonLoader } from "react-spinners";
+import DrawerComponent from "../DrawerComponent/DrawerComponent";
+import ModalComponent from "../ModalComponent/ModalComponent";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import useMutationHook from "../../hooks/useMutationHook";
+import * as message from "../../components/Message/Message";
+import { getBase64 } from "../../util";
+import * as UserService from "../../services/UserServices";
+
+const AdminUser = () => {
+    const [isModelOpen, setIsModelOpen] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [rowSelected, setRowSelected] = useState(null);
+    const [isOpenDrawer, setIsOpenDrawer] = useState(false);
+    const [shouldRenderModal, setShouldRenderModal] = useState(false);
+    const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
+    const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+    const [searchText, setSearchText] = useState("");
+    const [searchColumn, setSearchColumn] = useState("name");
+    const user = useSelector((state) => state.user);
+    const queryClient = useQueryClient();
+
+    const [stateUser, setStateUser] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        isAdmin: false,
+    });
+
+    const [stateUserDetails, setStateUserDetails] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        isAdmin: false,
+    });
+
+    const [successMsg, setSuccessMsg] = useState("");
+    const [errorMsg, setErrorMsg] = useState("");
+
+    const mutationUpdate = useMutationHook((data) => {
+        console.log("data", data);
+        const { id, token, ...rest } = data;
+        return UserService.updateUser(id, { ...rest }, token);
+    });
+
+    const mutationDeleted = useMutationHook((data) => {
+        const { id, token } = data;
+        return UserService.deleteUser(id, token);
+    });
+
+    const mutationDeletedMany = useMutationHook((data) => {
+        const { token, ...ids } = data;
+        return UserService.deleteManyUser(ids, token);
+    });
+
+    const handleDeleteManyUsers = (ids) => {
+        mutationDeletedMany.mutate({
+            ids: ids,
+            token: user.access_token,
+        });
+    };
+
+    const getAllUsers = async () => {
+        const res = await UserService.getAllUser();
+        console.log("res", res);
+        return res;
+    };
+
+    const {
+        data: dataUpdated,
+        isPending: isLoadingUpdated,
+        isSuccess: isSuccessUpdated,
+        isError: isErrorUpdated,
+    } = mutationUpdate;
+
+    const {
+        data: dataDeleted,
+        isPending: isLoadingDeleted,
+        isSuccess: isSuccessDeleted,
+        isError: isErrorDeleted,
+    } = mutationDeleted;
+
+    const {
+        data: dataDeletedMany,
+        isPending: isLoadingDeletedMany,
+        isSuccess: isSuccessDeletedMany,
+        isError: isErrorDeletedMany,
+    } = mutationDeletedMany;
+
+    const { isLoading: isLoadingUsers, data: users } = useQuery({
+        queryKey: ["users"],
+        queryFn: getAllUsers,
+    });
+
+    const handleCancel = () => {
+        setIsModelOpen(false);
+        setStateUser({
+            name: "",
+            email: "",
+            phone: "",
+            isAdmin: false,
+        });
+    };
+
+    const handleCloseDrawer = () => {
+        setIsOpenDrawer(false);
+        setStateUser({
+            name: "",
+            email: "",
+            phone: "",
+            isAdmin: false,
+        });
+    };
+
+    const handleOnChangeName = (e) => {
+        setStateUser({
+            ...stateUser,
+            name: e.target.value,
+        });
+    };
+    const handleOnChangeEmail = (e) => {
+        setStateUser({
+            ...stateUser,
+            email: e.target.value,
+        });
+    };
+    const handleOnChangePhone = (e) => {
+        setStateUser({
+            ...stateUser,
+            phone: e.target.value,
+        });
+    };
+    // const handleOnChangeImage = async (e) => {
+    //     console.log("e.target.files", e.target.files);
+    //     const file = e.target.files[0];
+    //     console.log("file", file);
+    //     if (file) {
+    //         const base64 = await getBase64(file);
+    //         setStateUser({
+    //             ...stateUser,
+    //             image: base64,
+    //         });
+    //     }
+    // };
+
+    const handleOnChangeNameDetails = (e) => {
+        setStateUserDetails({
+            ...stateUserDetails,
+            name: e.target.value,
+        });
+    };
+    const handleOnChangeEmailDetails = (e) => {
+        setStateUserDetails({
+            ...stateUserDetails,
+            email: e.target.value,
+        });
+    };
+    const handleOnChangePhoneDetails = (e) => {
+        setStateUserDetails({
+            ...stateUserDetails,
+            phone: e.target.value,
+        });
+    };
+    // const handleOnChangeImageDetails = async (e) => {
+    //     console.log("e.target.files", e.target.files);
+    //     const file = e.target.files[0];
+    //     console.log("file", file);
+    //     if (file) {
+    //         const base64 = await getBase64(file);
+    //         setStateUserDetails({
+    //             ...stateUserDetails,
+    //             image: base64,
+    //         });
+    //     }
+    // };
+
+    const fetchGetDetailsUser = async (rowSelected) => {
+        const res = await UserService.getDetailsUser(rowSelected);
+        console.log("res.data", res.data);
+        if (res?.data) {
+            setStateUserDetails({
+                name: res?.data?.data?.name,
+                email: res?.data?.data?.email,
+                phone: res?.data?.data?.phone,
+                isAdmin: res?.data?.data?.isAdmin,
+            });
+        }
+        setIsLoadingUpdate(false);
+    };
+
+    useEffect(() => {
+        if (rowSelected) {
+            fetchGetDetailsUser(rowSelected);
+        }
+    }, [rowSelected]);
+
+    const handleDetailsProduct = () => {
+        if (rowSelected) {
+            setIsLoadingUpdate(true);
+            fetchGetDetailsUser(rowSelected);
+        }
+        setIsOpenDrawer(true);
+    };
+
+    const renderAction = () => {
+        return (
+            <div className="flex">
+                <AiOutlineDelete
+                    size={22}
+                    color="red"
+                    className="cursor-pointer"
+                    onClick={() => {
+                        setIsModalOpenDelete(true);
+                    }}
+                />
+                <AiOutlineForm
+                    size={22}
+                    color="orange"
+                    className="ml-2 cursor-pointer"
+                    onClick={handleDetailsProduct}
+                />
+            </div>
+        );
+    };
+
+    const columns = [
+        {
+            title: "Name",
+            dataIndex: "name",
+            sorter: (a, b) => a.name.localeCompare(b.name),
+        },
+        {
+            title: "Email",
+            dataIndex: "email",
+            sorter: (a, b) => a.email.localeCompare(b.email),
+        },
+        {
+            title: "Admin",
+            dataIndex: "isAdmin",
+            filters: [
+                {
+                    text: "True",
+                    value: true,
+                },
+                {
+                    text: "False",
+                    value: false,
+                },
+            ],
+        },
+        {
+            title: "Phone",
+            dataIndex: "phone",
+            sorter: (a, b) => a.phone - b.phone,
+        },
+        {
+            title: "Action",
+            dataIndex: "action",
+            render: renderAction,
+        },
+    ];
+
+    const dataTable =
+        users?.data?.length &&
+        users?.data?.map((user, index) => {
+            return {
+                ...user,
+                key: user._id,
+                isAdmin: user.isAdmin ? "True" : "False",
+                action: renderAction(),
+            };
+        });
+    console.log("users?.data?", users?.data);
+
+    useEffect(() => {
+        if (isSuccessUpdated && dataUpdated?.status === "OK") {
+            setSuccessMsg("Sửa tài khoản thành công!");
+            queryClient.invalidateQueries(["users"]);
+            handleCloseDrawer();
+        } else if (
+            (isSuccessUpdated && dataUpdated?.status !== "OK") ||
+            isErrorUpdated
+        ) {
+            // Ưu tiên lấy message từ API nếu có
+            setErrorMsg(
+                dataUpdated?.message ||
+                    "Sửa tài khoản thất bại, vui lòng thử lại."
+            );
+        }
+    }, [isSuccessUpdated, isErrorUpdated, dataUpdated]);
+
+    useEffect(() => {
+        if (isSuccessDeleted && dataDeleted?.status === "OK") {
+            setSuccessMsg("Xóa sản phẩm thành công!");
+            queryClient.invalidateQueries(["users"]);
+            handleCloseDrawer();
+        } else if (isErrorDeleted) {
+            setErrorMsg("Xóa sản phẩm thất bại, vui lòng thử lại.");
+        }
+    }, [isSuccessDeleted, isErrorDeleted]);
+
+    useEffect(() => {
+        if (isSuccessDeletedMany && dataDeletedMany?.status === "OK") {
+            setSuccessMsg("Xóa sản phẩm thành công!");
+            queryClient.invalidateQueries(["users"]);
+            handleCloseDrawer();
+        } else if (isErrorDeletedMany) {
+            setErrorMsg("Xóa sản phẩm thất bại, vui lòng thử lại.");
+        }
+    }, [isSuccessDeletedMany, isErrorDeletedMany]);
+
+    useEffect(() => {
+        if (isModelOpen) {
+            setShouldRenderModal(true);
+            setTimeout(() => setShowModal(true), 10);
+        } else if (shouldRenderModal) {
+            setShowModal(false);
+            const timer = setTimeout(() => setShouldRenderModal(false), 150);
+            return () => clearTimeout(timer);
+        }
+    }, [isModelOpen]);
+
+    const handleCancelDelete = () => {
+        setIsModalOpenDelete(false);
+    };
+
+    const handleDeleteUser = () => {
+        mutationDeleted.mutate({
+            id: rowSelected,
+            token: user.access_token,
+        });
+        setIsModalOpenDelete(false);
+    };
+
+    useEffect(() => {
+        let timer;
+        if (successMsg || errorMsg) {
+            timer = setTimeout(() => {
+                setSuccessMsg("");
+                setErrorMsg("");
+            }, 3000);
+        }
+        return () => clearTimeout(timer);
+    }, [successMsg, errorMsg]);
+
+    if (!users) {
+        return <div>No user found.</div>;
+    }
+
+    const onUpdateUser = (e) => {
+        e.preventDefault();
+        console.log("rowSelected", rowSelected);
+        mutationUpdate.mutate({
+            id: rowSelected,
+            token: user.access_token,
+            ...stateUserDetails,
+        });
+    };
+
+    const handleDeleteAll = (selectedIds) => {
+        // Xử lý xóa, ví dụ gọi API hoặc cập nhật state
+        console.log("Các id cần xóa:", selectedIds);
+        // Ví dụ: gọi API xóa nhiều
+        // await api.deleteManyUsers(selectedIds);
+    };
+
+    return (
+        <>
+            {successMsg && <message.Success mes={successMsg} />}
+            {errorMsg && <message.Error mes={errorMsg} />}
+            <h1 className="font-medium">Quản lý người dùng</h1>
+            <div className="mt-5">
+                <TableComponent
+                    columns={columns}
+                    data={dataTable}
+                    isLoading={isLoadingUsers}
+                    rowSelected={rowSelected}
+                    onRowSelect={setRowSelected}
+                    searchText={searchText}
+                    searchColumn={searchColumn}
+                    onSearchTextChange={setSearchText}
+                    onSearchColumnChange={setSearchColumn}
+                    handleDeleteMany={handleDeleteManyUsers}
+                />
+            </div>
+
+            <DrawerComponent
+                title="Chi tiết người dùng"
+                isOpen={isOpenDrawer}
+                onClose={() => setIsOpenDrawer(false)}
+                width="90%">
+                <div className=" p-4 w-full h-full top-0 left-0 ">
+                    <div>
+                        <div className="p-4 md:p-5 space-y-4">
+                            <form onSubmit={onUpdateUser} method="post">
+                                <div className="flex w-full">
+                                    <label htmlFor="Name" className="w-1/6">
+                                        Name:
+                                    </label>
+                                    <div className="w-5/6 border rounded">
+                                        <InputComponent
+                                            id="Name"
+                                            className={
+                                                "w-full py-1 px-2 focus:outline-none rounded"
+                                            }
+                                            required={true}
+                                            // name="name"
+                                            value={stateUserDetails.name}
+                                            onChange={handleOnChangeNameDetails}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex w-full mt-3">
+                                    <label htmlFor="Email" className="w-1/6">
+                                        Email:
+                                    </label>
+                                    <div className="w-5/6 border rounded">
+                                        <InputComponent
+                                            id="Email"
+                                            value={stateUserDetails.email}
+                                            className={
+                                                "w-full py-1 px-2 focus:outline-none rounded"
+                                            }
+                                            required={true}
+                                            onChange={
+                                                handleOnChangeEmailDetails
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex w-full mt-3">
+                                    <label htmlFor="Phone" className="w-1/6">
+                                        Phone:
+                                    </label>
+                                    <div className="w-5/6 border rounded">
+                                        <InputComponent
+                                            id="Phone"
+                                            value={stateUserDetails.phone}
+                                            className={
+                                                "w-full py-1 px-2 focus:outline-none rounded"
+                                            }
+                                            required={true}
+                                            onChange={
+                                                handleOnChangePhoneDetails
+                                            }
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* <div className="flex w-full mt-3">
+                                    <label htmlFor="Image" className="w-1/6">
+                                        Image:
+                                    </label>
+                                    <div className="w-5/6 border rounded">
+                                        <InputComponent
+                                            id={"Image"}
+                                            className={
+                                                "w-full py-1 px-2 focus:outline-none rounded"
+                                            }
+                                            required={true}
+                                            onChange={
+                                                handleOnChangeImageDetails
+                                            }
+                                            type="file"
+                                        />
+                                    </div>
+                                </div> */}
+
+                                {/* Modal footer */}
+                                <div className="flex items-center pt-4 mt-4 border-t border-gray-200 rounded-b justify-end">
+                                    <button
+                                        data-modal-hide="default-modal"
+                                        type="submit"
+                                        className=" flex items-center justify-center hover:cursor-pointer text-white bg-blue-700 hover:bg-blue-800 0 font-medium rounded-lg text-sm w-20 h-10 text-center ml-2">
+                                        {isLoadingUpdated ? (
+                                            <MoonLoader
+                                                size={20}
+                                                color="#fff"
+                                            />
+                                        ) : (
+                                            "Submit"
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </DrawerComponent>
+            <ModalComponent
+                title="Xóa người dùng"
+                open={isModalOpenDelete}
+                onCancel={handleCancelDelete}
+                onOk={handleDeleteUser}>
+                <div>Bạn có chắc xóa tài khoản này không?</div>
+            </ModalComponent>
+        </>
+    );
+};
+
+export default AdminUser;

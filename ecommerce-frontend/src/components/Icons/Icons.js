@@ -101,7 +101,7 @@ export const StarIconWhite = ({
         width={width}
         height={height}
         className={className}
-        ariaHidden="true"
+        aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         fill="#d1d5db"
         viewBox="0 0 22 20">
@@ -212,11 +212,11 @@ export const EyeIcon = ({ width = "20px", height = "20px", className }) => (
 
 export const LoadingIcon = ({ width = "20px", height = "20px", className }) => (
     <svg
-        width={width}
-        height={height}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
-        ariaHidden="true"
+        width={width}
+        height={height}
+        aria-hidden="true"
         className={`inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-gray-600 dark:fill-gray-300 ${className}`}
         viewBox="0 0 100 101">
         <path

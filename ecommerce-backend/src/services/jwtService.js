@@ -3,7 +3,6 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const generalAccessToken = async (payload) => {
-    // console.log('payload: ', ...payload);
     const access_token = jwt.sign(
         {
             ...payload,
@@ -30,9 +29,7 @@ const generalRefreshToken = async (payload) => {
 const refreshTokenJwtService = (token) => {
     return new Promise((resolve, reject) => {
         try {
-            // console.log('token', token);
             jwt.verify(token, process.env.REFRESH_TOKEN, async (err, user) => {
-                // console.log('err', err);
                 if (err) {
                     resolve({
                         status: 'ERR',
@@ -43,7 +40,6 @@ const refreshTokenJwtService = (token) => {
                     id: user?.id,
                     isAdmin: user?.isAdmin,
                 });
-                // console.log('access_token', access_token);
                 resolve({
                     status: 'OK',
                     message: 'Success',

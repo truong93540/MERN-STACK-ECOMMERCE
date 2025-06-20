@@ -7,7 +7,7 @@ import MenuItem from "./MenuItem";
 import * as UserServices from "../../../services/UserServices";
 import { useDispatch } from "react-redux";
 import { resetUser } from "../../../redux/slides/userSlide";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const defaultFn = () => {};
 
@@ -16,6 +16,7 @@ function Menu({
     items = [],
     hideOnClick = false,
     onChange = defaultFn,
+    user,
 }) {
     const [history, setHistory] = useState([{ data: items }]);
     const current = history[history.length - 1];
@@ -30,26 +31,39 @@ function Menu({
     };
 
     const renderItems = () => {
-        return current.data.map((item, index) => {
-            const isParent = !!item.children;
-            return (
-                <MenuItem
-                    key={index}
-                    data={item}
-                    onClick={() => {
-                        if (isParent) {
-                            setHistory((prev) => [...prev, item.children]);
-                        } else {
-                            if (item.type === "logout") {
-                                handleLogout();
-                            } else if (item.type === "profile") {
-                                navigate("/profile-user");
+        return current.data
+            .filter((item) => {
+                if (item.type === "system_admin" && !user?.isAdmin)
+                    return false;
+                return true;
+            })
+            .map((item, index) => {
+                const isParent = !!item.children;
+                return (
+                    <MenuItem
+                        key={index}
+                        data={item}
+                        onClick={() => {
+                            if (isParent) {
+                                setHistory((prev) => [...prev, item.children]);
+                            } else {
+                                switch (item.type) {
+                                    case "logout":
+                                        handleLogout();
+                                        break;
+                                    case "profile":
+                                        navigate("/profile-user");
+                                        break;
+                                    case "system_admin":
+                                        navigate("/system/admin");
+                                        break;
+                                    default:
+                                }
                             }
-                        }
-                    }}
-                />
-            );
-        });
+                        }}
+                    />
+                );
+            });
     };
 
     const handleBack = () => {

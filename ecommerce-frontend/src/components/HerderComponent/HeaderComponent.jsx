@@ -5,11 +5,14 @@ import { useSelector } from "react-redux";
 import Menu from "../Popper/Menu/Menu";
 import { useEffect, useState } from "react";
 
-function HeaderComponent() {
+function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
     const numberOfProductsAddedToCart = 1;
     const navigate = useNavigate();
     const handleNavigateLogin = () => {
         navigate("/sign-in");
+    };
+    const handleNavigateHome = () => {
+        navigate("/");
     };
     const user = useSelector((state) => state.user);
     const [userName, setUserName] = useState("");
@@ -22,27 +25,35 @@ function HeaderComponent() {
 
     const userMenu = [
         {
-            title: "Đăng xuất",
-            type: "logout",
-        },
-        {
             title: "Thông tin người dùng",
             type: "profile",
+        },
+        {
+            title: "Quản lý hệ thống",
+            type: "system_admin",
+        },
+        {
+            title: "Đăng xuất",
+            type: "logout",
         },
     ];
 
     return (
-        <div className="py-[10px] bg-[#1A94FF] min-w-[1024px]">
-            <div className="flex flex-row items-center flex-nowrap max-w-6xl m-auto">
-                <div className="basis-1/6 text-lg text-[#fff] font-bold text-left text-s">
+        <div className="bg-[#1A94FF] min-w-[1024px] h-[68px]">
+            <div className="flex flex-row items-center flex-nowrap max-w-6xl m-auto justify-between h-full">
+                <div
+                    className="basis-1/6 text-lg text-[#fff] font-bold text-left text-s cursor-pointer"
+                    onClick={handleNavigateHome}>
                     TIKI
                 </div>
-                <div className="basis-1/2 rounded-sm mx-3">
-                    <ButtonInputSearch
-                        textButton="Tìm kiếm"
-                        placeholder="Tìm kiếm tại đây"
-                    />
-                </div>
+                {!isHiddenSearch && (
+                    <div className="basis-1/2 rounded-sm mx-3">
+                        <ButtonInputSearch
+                            textButton="Tìm kiếm"
+                            placeholder="Tìm kiếm tại đây"
+                        />
+                    </div>
+                )}
                 <div className="basis-1/3 text-white flex justify-between">
                     <div className="flex items-center cursor-pointer">
                         {user?.access_token ? (
@@ -59,14 +70,14 @@ function HeaderComponent() {
                                     </div>
                                 )}
 
-                                <Menu items={userMenu}>
+                                <Menu items={userMenu} user={user}>
                                     <div className="cursor-pointer">
                                         {userName || user.email}
                                     </div>
                                 </Menu>
                             </div>
                         ) : (
-                            <>
+                            <div className="flex gap-4 items-center ml-4">
                                 <UserIcon />
                                 <div
                                     className="flex flex-col ml-2 "
@@ -77,20 +88,22 @@ function HeaderComponent() {
                                         <DownIcon />
                                     </span>
                                 </div>
-                            </>
+                            </div>
                         )}
                     </div>
-                    <div className="ml-5 flex items-center ">
-                        <div className="relative">
-                            <CartIcon />
-                            {numberOfProductsAddedToCart > 0 && (
-                                <span className="absolute top-[-4px] right-[-4px] bg-[#FF6357] w-[18px] h-[18px] rounded-full text-xs text-center border border-inherit">
-                                    {numberOfProductsAddedToCart}
-                                </span>
-                            )}
+                    {!isHiddenCart && (
+                        <div className="ml-5 flex items-center ">
+                            <div className="relative">
+                                <CartIcon />
+                                {numberOfProductsAddedToCart > 0 && (
+                                    <span className="absolute top-[-4px] right-[-4px] bg-[#FF6357] w-[18px] h-[18px] rounded-full text-xs text-center border border-inherit">
+                                        {numberOfProductsAddedToCart}
+                                    </span>
+                                )}
+                            </div>
+                            <span className="ml-1 mt-2">Giỏ Hàng</span>
                         </div>
-                        <span className="ml-1 mt-2">Giỏ Hàng</span>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>

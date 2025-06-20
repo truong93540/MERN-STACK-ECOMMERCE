@@ -18,9 +18,8 @@ function HomePage() {
         retry: 3,
         retryDelay: 1000,
     });
-    console.log("data", products);
     return (
-        <div className="min-w-[1024px]">
+        <div className="min-w-[1024px] min-h-96">
             <div className="max-w-6xl m-auto">
                 <div className="flex flex-nowrap h-11 items-center ">
                     {arr.map((item) => {

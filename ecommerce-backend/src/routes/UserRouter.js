@@ -18,5 +18,6 @@ router.get(
     UserController.getDetailsUser
 );
 router.post('/refresh-token', UserController.refreshToken);
+router.post('/delete-many', authMiddleware, UserController.deleteMany);
 
 module.exports = router;

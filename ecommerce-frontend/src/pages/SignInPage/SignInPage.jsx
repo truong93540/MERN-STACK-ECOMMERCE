@@ -24,7 +24,6 @@ function SignInPage() {
     };
 
     const mutation = useMutationHook((data) => UserServices.loginUser(data));
-    console.log("mutation", mutation);
 
     const { data, isPending, isSuccess } = mutation;
 
@@ -51,8 +50,6 @@ function SignInPage() {
         }
     };
 
-    // console.log("mutation", mutation);
-
     const handleChangeInputGmail = (value) => {
         setInputGmail(value);
         if (value.length > 0) {
@@ -60,7 +57,6 @@ function SignInPage() {
             elementGmailSignIn.classList.remove("border-red-400");
             elementGmailSignIn.classList.remove("border");
         }
-        // console.log("gmail", e.target.value);
     };
 
     const handleChangeInputPassword = (value) => {
@@ -72,7 +68,6 @@ function SignInPage() {
             elementPasswordSignIn.classList.remove("border-red-400");
             elementPasswordSignIn.classList.remove("border");
         }
-        // console.log("password", e.target.value);
     };
 
     const handleSubmitForm = () => {

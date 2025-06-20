@@ -19,7 +19,6 @@ function SignUpPage() {
     const [message, setMessage] = useState({ type: "", text: "" });
 
     const { data, isPending, isSuccess, isError } = mutation;
-    console.log(mutation);
 
     useEffect(() => {
         if (data?.data?.status === "ERR") {

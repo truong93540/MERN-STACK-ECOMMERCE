@@ -43,7 +43,6 @@ const updateProduct = (id, data) => {
             const checkProduct = await Product.findOne({
                 _id: id,
             });
-            // console.log("checkProduct", checkProduct);
 
             if (checkProduct === null) {
                 resolve({
@@ -55,7 +54,6 @@ const updateProduct = (id, data) => {
             const updateProduct = await Product.findByIdAndUpdate(id, data, {
                 new: true,
             });
-            // console.log("updateUser", updateUser);
 
             resolve({
                 status: 'OK',
@@ -111,6 +109,20 @@ const deleteProduct = (id) => {
 
             await Product.findByIdAndDelete(id);
 
+            resolve({
+                status: 'OK',
+                message: 'Delete product success',
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+const deleteManyProduct = (ids) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            await Product.deleteMany({ _id: ids });
             resolve({
                 status: 'OK',
                 message: 'Delete product success',
@@ -186,4 +198,5 @@ module.exports = {
     getDetailProduct,
     deleteProduct,
     getAllProduct,
+    deleteManyProduct,
 };

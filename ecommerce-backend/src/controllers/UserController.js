@@ -97,17 +97,31 @@ const deleteUser = async (req, res) => {
     try {
         const userId = req.params.id;
         const token = req.headers;
-        // console.log("userId", userId);
-        // console.log("token", token);
         if (!userId) {
             res.status(200).json({
                 status: 'ERR',
                 message: 'The userId is required',
             });
         }
-        // console.log("userid", userId);
-        // console.log("is check email: ", isCheckEmail);
         const response = await UserServices.deleteUser(userId);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e,
+        });
+    }
+};
+
+const deleteMany = async (req, res) => {
+    try {
+        const ids = req.body.ids;
+        if (!ids) {
+            res.status(200).json({
+                status: 'ERR',
+                message: 'The ids are required',
+            });
+        }
+        const response = await UserServices.deleteManyUser(ids);
         return res.status(200).json(response);
     } catch (e) {
         return res.status(404).json({
@@ -171,7 +185,6 @@ const logoutUser = async (req, res) => {
             secure: false,
             sameSite: 'Strict',
         });
-        console.log(123);
         return res.status(200).json({
             status: 'OK',
             message: 'Logout successfully',
@@ -192,4 +205,5 @@ module.exports = {
     getDetailsUser,
     refreshToken,
     logoutUser,
+    deleteMany,
 };

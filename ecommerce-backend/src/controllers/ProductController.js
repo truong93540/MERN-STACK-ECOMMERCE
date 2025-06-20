@@ -50,7 +50,6 @@ const updateProduct = async (req, res) => {
 const getDetailProduct = async (req, res) => {
     try {
         const productId = req.params.id;
-        console.log('productId', productId);
         if (!productId) {
             res.status(200).json({
                 status: 'ERR',
@@ -70,17 +69,31 @@ const getDetailProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
     try {
         const productId = req.params.id;
-        // console.log("userId", userId);
-        // console.log("token", token);
         if (!productId) {
             res.status(200).json({
                 status: 'ERR',
                 message: 'The productId is required',
             });
         }
-        // console.log("userid", userId);
-        // console.log("is check email: ", isCheckEmail);
         const response = await ProductServices.deleteProduct(productId);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e,
+        });
+    }
+};
+
+const deleteMany = async (req, res) => {
+    try {
+        const ids = req.body.ids;
+        if (!ids) {
+            res.status(200).json({
+                status: 'ERR',
+                message: 'The ids is required',
+            });
+        }
+        const response = await ProductServices.deleteManyProduct(ids);
         return res.status(200).json(response);
     } catch (e) {
         return res.status(404).json({
@@ -91,10 +104,9 @@ const deleteProduct = async (req, res) => {
 
 const getAllProduct = async (req, res) => {
     try {
-        // console.log('req.query', req.query);
         const { limit, page, sort, filter } = req.query;
         const response = await ProductServices.getAllProduct(
-            Number(limit) || 8,
+            Number(limit) || 10,
             Number(page) || 0,
             sort,
             filter
@@ -113,4 +125,5 @@ module.exports = {
     getDetailProduct,
     deleteProduct,
     getAllProduct,
+    deleteMany,
 };

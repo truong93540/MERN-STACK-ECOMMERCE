@@ -12,9 +12,9 @@ function InputComponent({
             placeholder={placeholder}
             bordered={bordered}
             style={style}
-            {...rests}
             type="text"
-            id="default-search"
+            {...rests}
+            id={rests.id}
             className={className}
         />
     );

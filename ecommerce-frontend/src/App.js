@@ -19,6 +19,7 @@ function App() {
         if (decoded?.id && storageData) {
             handleGetDetailsUser(decoded?.id, storageData);
         }
+        setIsLoading(false);
     }, []);
 
     const handleDecoded = () => {
@@ -86,7 +87,6 @@ function App() {
         } catch (error) {
             console.error("Error fetching user details:", error);
         }
-        setIsLoading(false);
     };
 
     return (
