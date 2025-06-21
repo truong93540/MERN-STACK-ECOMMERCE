@@ -59,7 +59,6 @@ function SignUpPage() {
             elementGmailSignIn.classList.remove("border-red-400");
             elementGmailSignIn.classList.remove("border");
         }
-        // console.log("gmail", value);
     };
 
     const handleChangeInputPassword = (value) => {
@@ -71,7 +70,6 @@ function SignUpPage() {
             elementPasswordSignIn.classList.remove("border-red-400");
             elementPasswordSignIn.classList.remove("border");
         }
-        // console.log("password", value);
     };
 
     const handleChangeConfirmInputPassword = (value) => {
@@ -96,10 +94,11 @@ function SignUpPage() {
                 email: inputGmail,
                 password: inputPassword,
                 confirmPassword: inputConfirmPassword,
+                name: inputGmail.split("@")[0],
+                phone: "",
+                address: "",
+                avatar: "",
             });
-            // console.log(
-            //     `gmail: ${inputGmail} password: ${inputPassword} confirm password: ${inputConfirmPassword}`
-            // );
         }
         if (inputGmail.length === 0) {
             const elementGmailSignUp = document.getElementById("sign-up-gmail");

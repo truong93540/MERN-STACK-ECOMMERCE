@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import Loading from "../Loading/Loading";
 
 const TableComponent = (props) => {
     const {
@@ -11,6 +14,7 @@ const TableComponent = (props) => {
         onSearchTextChange = () => {},
         onSearchColumnChange = () => {},
         handleDeleteMany = () => {},
+        isLoading,
     } = props;
     const [sortConfig, setSortConfig] = useState({
         key: null,
@@ -91,6 +95,31 @@ const TableComponent = (props) => {
         handleDeleteMany(rowSelectedKeys);
     };
 
+    const exportToExcel = () => {
+        const exportData = sortedData.map((item) => {
+            const row = {};
+            columns.forEach((col) => {
+                if (col.dataIndex !== "action" && col.dataIndex !== "Action") {
+                    row[col.title] = item[col.dataIndex];
+                }
+            });
+            return row;
+        });
+
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: "xlsx",
+            type: "array",
+        });
+        const blob = new Blob([excelBuffer], {
+            type: "application/octet-stream",
+        });
+        saveAs(blob, "table-data.xlsx");
+    };
+
     return (
         <>
             {/* Search box */}
@@ -125,35 +154,44 @@ const TableComponent = (props) => {
             </div>
 
             {/* Filter cho từng cột */}
-            <div className="mb-2 flex items-center gap-2">
-                {columns.map(
-                    (col) =>
-                        col.filters && (
-                            <div key={col.dataIndex}>
-                                <span>Filter by: </span>
-                                <select
-                                    key={col.dataIndex}
-                                    className="border px-2 py-2 rounded cursor-pointer"
-                                    value={filters[col.dataIndex] || ""}
-                                    onChange={(e) =>
-                                        setFilters((f) => ({
-                                            ...f,
-                                            [col.dataIndex]:
-                                                e.target.value || undefined,
-                                        }))
-                                    }>
-                                    <option value="">All {col.title}</option>
-                                    {col.filters.map((opt) => (
-                                        <option
-                                            key={opt.value}
-                                            value={opt.value}>
-                                            {opt.text}
+            <div className="flex justify-between items-center">
+                <div className="mb-2 flex items-center gap-2">
+                    {columns.map(
+                        (col) =>
+                            col.filters && (
+                                <div key={col.dataIndex}>
+                                    <span>Filter by: </span>
+                                    <select
+                                        key={col.dataIndex}
+                                        className="border px-2 py-2 rounded cursor-pointer"
+                                        value={filters[col.dataIndex] || ""}
+                                        onChange={(e) =>
+                                            setFilters((f) => ({
+                                                ...f,
+                                                [col.dataIndex]:
+                                                    e.target.value || undefined,
+                                            }))
+                                        }>
+                                        <option value="">
+                                            All {col.title}
                                         </option>
-                                    ))}
-                                </select>
-                            </div>
-                        )
-                )}
+                                        {col.filters.map((opt) => (
+                                            <option
+                                                key={opt.value}
+                                                value={opt.value}>
+                                                {opt.text}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )
+                    )}
+                </div>
+                <button
+                    className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                    onClick={exportToExcel}>
+                    Export Excel
+                </button>
             </div>
 
             {/* Table */}
@@ -166,112 +204,117 @@ const TableComponent = (props) => {
                     </button>
                 )}
                 <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                    <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
-                            <tr>
-                                <th scope="col" className="p-4">
-                                    <div className="flex items-center">
-                                        <input
-                                            id="checkbox-all-search"
-                                            type="checkbox"
-                                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500  focus:ring-2 "
-                                            checked={
-                                                sortedData.length > 0 &&
-                                                rowSelectedKeys.length ===
-                                                    sortedData.length
-                                            }
-                                            onChange={handleSelectAll}
-                                        />
-                                        <label
-                                            htmlFor="checkbox-all-search"
-                                            className="sr-only">
-                                            checkbox
-                                        </label>
-                                    </div>
-                                </th>
-                                {columns.map((column) => (
-                                    <th
-                                        key={column.dataIndex}
-                                        scope="col"
-                                        className="px-6 py-3 select-none hover:bg-gray-100"
-                                        onClick={() =>
-                                            handleSort(
-                                                column.dataIndex,
-                                                column.sorter
-                                            )
-                                        }>
-                                        <span className="flex items-center gap-1 ">
-                                            {column.title}
-                                            {column.sorter && (
-                                                <div className="cursor-pointer p-3 hover:text-blue-600">
-                                                    {sortConfig.key ===
-                                                        column.dataIndex &&
-                                                        sortConfig.direction ===
-                                                            "asc" && (
-                                                            <AiFillCaretDown />
-                                                        )}
-                                                    {sortConfig.key ===
-                                                        column.dataIndex &&
-                                                        sortConfig.direction ===
-                                                            "desc" && (
-                                                            <AiFillCaretUp />
-                                                        )}
-                                                    {sortConfig.key !==
-                                                        column.dataIndex && (
-                                                        <span className="opacity-30">
-                                                            <AiFillCaretDown />
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </span>
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {sortedData.map((item, rowIndex) => (
-                                <tr
-                                    key={item._id || item.id || rowIndex}
-                                    className="bg-white border-b  border-gray-200 hover:bg-gray-50 ">
-                                    <td className="w-4 p-4">
+                    <Loading spinning={isLoading} tip="Đang tải...">
+                        <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
+                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
+                                <tr>
+                                    <th scope="col" className="p-4">
                                         <div className="flex items-center">
                                             <input
-                                                id="checkbox-table-search-2"
+                                                id="checkbox-all-search"
                                                 type="checkbox"
-                                                checked={rowSelectedKeys.includes(
-                                                    item._id || item.id
-                                                )}
-                                                onChange={() =>
-                                                    handleCheckboxChange(
-                                                        item._id || item.id
-                                                    )
-                                                }
                                                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500  focus:ring-2 "
+                                                checked={
+                                                    sortedData.length > 0 &&
+                                                    rowSelectedKeys.length ===
+                                                        sortedData.length
+                                                }
+                                                onChange={handleSelectAll}
                                             />
                                             <label
-                                                htmlFor="checkbox-table-search-2"
+                                                htmlFor="checkbox-all-search"
                                                 className="sr-only">
                                                 checkbox
                                             </label>
                                         </div>
-                                    </td>
-                                    {columns.map((col) => (
-                                        <td
-                                            key={`${col.dataIndex}-${
-                                                item._id || item.id || rowIndex
-                                            }`}
-                                            className="px-6 py-4"
+                                    </th>
+                                    {columns.map((column) => (
+                                        <th
+                                            key={column.dataIndex}
+                                            scope="col"
+                                            className="px-6 py-3 select-none hover:bg-gray-100"
                                             onClick={() =>
-                                                handleRowSelected(item._id)
+                                                handleSort(
+                                                    column.dataIndex,
+                                                    column.sorter
+                                                )
                                             }>
-                                            {item[col.dataIndex]}
-                                        </td>
+                                            <span className="flex items-center gap-1 ">
+                                                {column.title}
+                                                {column.sorter && (
+                                                    <div className="cursor-pointer p-3 hover:text-blue-600">
+                                                        {sortConfig.key ===
+                                                            column.dataIndex &&
+                                                            sortConfig.direction ===
+                                                                "asc" && (
+                                                                <AiFillCaretDown />
+                                                            )}
+                                                        {sortConfig.key ===
+                                                            column.dataIndex &&
+                                                            sortConfig.direction ===
+                                                                "desc" && (
+                                                                <AiFillCaretUp />
+                                                            )}
+                                                        {sortConfig.key !==
+                                                            column.dataIndex && (
+                                                            <span className="opacity-30">
+                                                                <AiFillCaretDown />
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </span>
+                                        </th>
                                     ))}
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+
+                            <tbody>
+                                {sortedData.map((item, rowIndex) => (
+                                    <tr
+                                        key={item._id || item.id || rowIndex}
+                                        className="bg-white border-b  border-gray-200 hover:bg-gray-50 ">
+                                        <td className="w-4 p-4">
+                                            <div className="flex items-center">
+                                                <input
+                                                    id="checkbox-table-search-2"
+                                                    type="checkbox"
+                                                    checked={rowSelectedKeys.includes(
+                                                        item._id || item.id
+                                                    )}
+                                                    onChange={() =>
+                                                        handleCheckboxChange(
+                                                            item._id || item.id
+                                                        )
+                                                    }
+                                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500  focus:ring-2 "
+                                                />
+                                                <label
+                                                    htmlFor="checkbox-table-search-2"
+                                                    className="sr-only">
+                                                    checkbox
+                                                </label>
+                                            </div>
+                                        </td>
+                                        {columns.map((col) => (
+                                            <td
+                                                key={`${col.dataIndex}-${
+                                                    item._id ||
+                                                    item.id ||
+                                                    rowIndex
+                                                }`}
+                                                className="px-6 py-4"
+                                                onClick={() =>
+                                                    handleRowSelected(item._id)
+                                                }>
+                                                {item[col.dataIndex]}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </Loading>
                 </div>
                 <nav
                     className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"

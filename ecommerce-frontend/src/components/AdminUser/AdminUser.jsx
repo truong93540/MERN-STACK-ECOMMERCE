@@ -12,6 +12,7 @@ import useMutationHook from "../../hooks/useMutationHook";
 import * as message from "../../components/Message/Message";
 import { getBase64 } from "../../util";
 import * as UserService from "../../services/UserServices";
+import Loading from "../Loading/Loading";
 
 const AdminUser = () => {
     const [isModelOpen, setIsModelOpen] = useState(false);
@@ -19,25 +20,21 @@ const AdminUser = () => {
     const [rowSelected, setRowSelected] = useState(null);
     const [isOpenDrawer, setIsOpenDrawer] = useState(false);
     const [shouldRenderModal, setShouldRenderModal] = useState(false);
-    const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [searchColumn, setSearchColumn] = useState("name");
+    const [isLoadingDetail, setIsLoadingDetail] = useState(false);
+
     const user = useSelector((state) => state.user);
     const queryClient = useQueryClient();
-
-    const [stateUser, setStateUser] = useState({
-        name: "",
-        email: "",
-        phone: "",
-        isAdmin: false,
-    });
 
     const [stateUserDetails, setStateUserDetails] = useState({
         name: "",
         email: "",
         phone: "",
         isAdmin: false,
+        avatar: "",
+        address: "",
     });
 
     const [successMsg, setSuccessMsg] = useState("");
@@ -96,58 +93,16 @@ const AdminUser = () => {
     const { isLoading: isLoadingUsers, data: users } = useQuery({
         queryKey: ["users"],
         queryFn: getAllUsers,
+        refetchOnWindowFocus: false,
     });
 
     const handleCancel = () => {
         setIsModelOpen(false);
-        setStateUser({
-            name: "",
-            email: "",
-            phone: "",
-            isAdmin: false,
-        });
     };
 
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
-        setStateUser({
-            name: "",
-            email: "",
-            phone: "",
-            isAdmin: false,
-        });
     };
-
-    const handleOnChangeName = (e) => {
-        setStateUser({
-            ...stateUser,
-            name: e.target.value,
-        });
-    };
-    const handleOnChangeEmail = (e) => {
-        setStateUser({
-            ...stateUser,
-            email: e.target.value,
-        });
-    };
-    const handleOnChangePhone = (e) => {
-        setStateUser({
-            ...stateUser,
-            phone: e.target.value,
-        });
-    };
-    // const handleOnChangeImage = async (e) => {
-    //     console.log("e.target.files", e.target.files);
-    //     const file = e.target.files[0];
-    //     console.log("file", file);
-    //     if (file) {
-    //         const base64 = await getBase64(file);
-    //         setStateUser({
-    //             ...stateUser,
-    //             image: base64,
-    //         });
-    //     }
-    // };
 
     const handleOnChangeNameDetails = (e) => {
         setStateUserDetails({
@@ -167,20 +122,28 @@ const AdminUser = () => {
             phone: e.target.value,
         });
     };
-    // const handleOnChangeImageDetails = async (e) => {
-    //     console.log("e.target.files", e.target.files);
-    //     const file = e.target.files[0];
-    //     console.log("file", file);
-    //     if (file) {
-    //         const base64 = await getBase64(file);
-    //         setStateUserDetails({
-    //             ...stateUserDetails,
-    //             image: base64,
-    //         });
-    //     }
-    // };
+
+    const handleOnChangeAddressDetails = (e) => {
+        setStateUserDetails({
+            ...stateUserDetails,
+            address: e.target.value,
+        });
+    };
+    const handleOnChangeAvatarDetails = async (e) => {
+        console.log("e.target.files", e.target.files);
+        const file = e.target.files[0];
+        console.log("file", file);
+        if (file) {
+            const base64 = await getBase64(file);
+            setStateUserDetails({
+                ...stateUserDetails,
+                avatar: base64,
+            });
+        }
+    };
 
     const fetchGetDetailsUser = async (rowSelected) => {
+        setIsLoadingDetail(true);
         const res = await UserService.getDetailsUser(rowSelected);
         console.log("res.data", res.data);
         if (res?.data) {
@@ -189,9 +152,11 @@ const AdminUser = () => {
                 email: res?.data?.data?.email,
                 phone: res?.data?.data?.phone,
                 isAdmin: res?.data?.data?.isAdmin,
+                avatar: res?.data?.data?.avatar,
+                address: res?.data?.data?.address,
             });
         }
-        setIsLoadingUpdate(false);
+        setIsLoadingDetail(false);
     };
 
     useEffect(() => {
@@ -202,7 +167,7 @@ const AdminUser = () => {
 
     const handleDetailsProduct = () => {
         if (rowSelected) {
-            setIsLoadingUpdate(true);
+            setIsLoadingDetail(true);
             fetchGetDetailsUser(rowSelected);
         }
         setIsOpenDrawer(true);
@@ -240,6 +205,12 @@ const AdminUser = () => {
             dataIndex: "email",
             sorter: (a, b) => a.email.localeCompare(b.email),
         },
+        {
+            title: "Address",
+            dataIndex: "address",
+            sorter: (a, b) => a.address.localeCompare(b.address),
+        },
+
         {
             title: "Admin",
             dataIndex: "isAdmin",
@@ -287,7 +258,6 @@ const AdminUser = () => {
             (isSuccessUpdated && dataUpdated?.status !== "OK") ||
             isErrorUpdated
         ) {
-            // Ưu tiên lấy message từ API nếu có
             setErrorMsg(
                 dataUpdated?.message ||
                     "Sửa tài khoản thất bại, vui lòng thử lại."
@@ -349,7 +319,7 @@ const AdminUser = () => {
         return () => clearTimeout(timer);
     }, [successMsg, errorMsg]);
 
-    if (!users) {
+    if (!isLoadingUsers && (!users || !users.data || users.data.length === 0)) {
         return <div>No user found.</div>;
     }
 
@@ -364,10 +334,7 @@ const AdminUser = () => {
     };
 
     const handleDeleteAll = (selectedIds) => {
-        // Xử lý xóa, ví dụ gọi API hoặc cập nhật state
         console.log("Các id cần xóa:", selectedIds);
-        // Ví dụ: gọi API xóa nhiều
-        // await api.deleteManyUsers(selectedIds);
     };
 
     return (
@@ -393,105 +360,149 @@ const AdminUser = () => {
             <DrawerComponent
                 title="Chi tiết người dùng"
                 isOpen={isOpenDrawer}
-                onClose={() => setIsOpenDrawer(false)}
+                onClose={() => {
+                    setIsOpenDrawer(false);
+                }}
                 width="90%">
-                <div className=" p-4 w-full h-full top-0 left-0 ">
-                    <div>
-                        <div className="p-4 md:p-5 space-y-4">
-                            <form onSubmit={onUpdateUser} method="post">
-                                <div className="flex w-full">
-                                    <label htmlFor="Name" className="w-1/6">
-                                        Name:
-                                    </label>
-                                    <div className="w-5/6 border rounded">
-                                        <InputComponent
-                                            id="Name"
-                                            className={
-                                                "w-full py-1 px-2 focus:outline-none rounded"
-                                            }
-                                            required={true}
-                                            // name="name"
-                                            value={stateUserDetails.name}
-                                            onChange={handleOnChangeNameDetails}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="flex w-full mt-3">
-                                    <label htmlFor="Email" className="w-1/6">
-                                        Email:
-                                    </label>
-                                    <div className="w-5/6 border rounded">
-                                        <InputComponent
-                                            id="Email"
-                                            value={stateUserDetails.email}
-                                            className={
-                                                "w-full py-1 px-2 focus:outline-none rounded"
-                                            }
-                                            required={true}
-                                            onChange={
-                                                handleOnChangeEmailDetails
-                                            }
-                                        />
-                                    </div>
-                                </div>
-                                <div className="flex w-full mt-3">
-                                    <label htmlFor="Phone" className="w-1/6">
-                                        Phone:
-                                    </label>
-                                    <div className="w-5/6 border rounded">
-                                        <InputComponent
-                                            id="Phone"
-                                            value={stateUserDetails.phone}
-                                            className={
-                                                "w-full py-1 px-2 focus:outline-none rounded"
-                                            }
-                                            required={true}
-                                            onChange={
-                                                handleOnChangePhoneDetails
-                                            }
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* <div className="flex w-full mt-3">
-                                    <label htmlFor="Image" className="w-1/6">
-                                        Image:
-                                    </label>
-                                    <div className="w-5/6 border rounded">
-                                        <InputComponent
-                                            id={"Image"}
-                                            className={
-                                                "w-full py-1 px-2 focus:outline-none rounded"
-                                            }
-                                            required={true}
-                                            onChange={
-                                                handleOnChangeImageDetails
-                                            }
-                                            type="file"
-                                        />
-                                    </div>
-                                </div> */}
-
-                                {/* Modal footer */}
-                                <div className="flex items-center pt-4 mt-4 border-t border-gray-200 rounded-b justify-end">
-                                    <button
-                                        data-modal-hide="default-modal"
-                                        type="submit"
-                                        className=" flex items-center justify-center hover:cursor-pointer text-white bg-blue-700 hover:bg-blue-800 0 font-medium rounded-lg text-sm w-20 h-10 text-center ml-2">
-                                        {isLoadingUpdated ? (
-                                            <MoonLoader
-                                                size={20}
-                                                color="#fff"
+                <Loading spinning={isLoadingDetail} tip="Loading...">
+                    <div className=" p-4 w-full h-full top-0 left-0 ">
+                        <div>
+                            <div className="p-4 md:p-5 space-y-4">
+                                <form onSubmit={onUpdateUser} method="post">
+                                    <div className="flex w-full">
+                                        <label htmlFor="Name" className="w-1/6">
+                                            Name:
+                                        </label>
+                                        <div className="w-5/6 border rounded">
+                                            <InputComponent
+                                                id="Name"
+                                                className={
+                                                    "w-full py-1 px-2 focus:outline-none rounded"
+                                                }
+                                                required={true}
+                                                // name="name"
+                                                value={stateUserDetails.name}
+                                                onChange={
+                                                    handleOnChangeNameDetails
+                                                }
                                             />
-                                        ) : (
-                                            "Submit"
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
+                                        </div>
+                                    </div>
+                                    <div className="flex w-full mt-3">
+                                        <label
+                                            htmlFor="Email"
+                                            className="w-1/6">
+                                            Email:
+                                        </label>
+                                        <div className="w-5/6 border rounded">
+                                            <InputComponent
+                                                id="Email"
+                                                value={stateUserDetails.email}
+                                                className={
+                                                    "w-full py-1 px-2 focus:outline-none rounded"
+                                                }
+                                                required={true}
+                                                onChange={
+                                                    handleOnChangeEmailDetails
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex w-full mt-3">
+                                        <label
+                                            htmlFor="Phone"
+                                            className="w-1/6">
+                                            Phone:
+                                        </label>
+                                        <div className="w-5/6 border rounded">
+                                            <InputComponent
+                                                id="Phone"
+                                                value={stateUserDetails.phone}
+                                                className={
+                                                    "w-full py-1 px-2 focus:outline-none rounded"
+                                                }
+                                                required={true}
+                                                onChange={
+                                                    handleOnChangePhoneDetails
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex w-full mt-3">
+                                        <label
+                                            htmlFor="Address"
+                                            className="w-1/6">
+                                            Address:
+                                        </label>
+                                        <div className="w-5/6 border rounded">
+                                            <InputComponent
+                                                id="Address"
+                                                value={stateUserDetails.address}
+                                                className={
+                                                    "w-full py-1 px-2 focus:outline-none rounded"
+                                                }
+                                                required={true}
+                                                onChange={
+                                                    handleOnChangeAddressDetails
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex w-full mt-3">
+                                        <label
+                                            htmlFor="Image"
+                                            className="w-1/6">
+                                            Image:
+                                        </label>
+                                        <div className="w-5/6 border rounded">
+                                            {stateUserDetails?.avatar && (
+                                                <>
+                                                    <img
+                                                        src={
+                                                            stateUserDetails.avatar
+                                                        }
+                                                        alt=""
+                                                        className="w-[100px] h-[100px] rounded px-2 mt-1"
+                                                    />
+                                                </>
+                                            )}
+                                            <InputComponent
+                                                id={"Image"}
+                                                className={
+                                                    "py-1 px-2 focus:outline-none rounded"
+                                                }
+                                                required={true}
+                                                onChange={
+                                                    handleOnChangeAvatarDetails
+                                                }
+                                                type="file"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Modal footer */}
+                                    <div className="flex items-center pt-4 mt-4 border-t border-gray-200 rounded-b justify-end">
+                                        <button
+                                            data-modal-hide="default-modal"
+                                            type="submit"
+                                            className=" flex items-center justify-center hover:cursor-pointer text-white bg-blue-700 hover:bg-blue-800 0 font-medium rounded-lg text-sm w-20 h-10 text-center ml-2">
+                                            {isLoadingUpdated ? (
+                                                <MoonLoader
+                                                    size={20}
+                                                    color="#fff"
+                                                />
+                                            ) : (
+                                                "Submit"
+                                            )}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </Loading>
             </DrawerComponent>
             <ModalComponent
                 title="Xóa người dùng"

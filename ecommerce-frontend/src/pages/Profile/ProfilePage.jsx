@@ -86,7 +86,7 @@ const ProfilePage = () => {
                 Thông tin người dùng
             </div>
 
-            <div className="border w-[600px] mx-auto p-7 rounded-xl gap-7 h-[360px] relative">
+            <div className="border w-[600px] mx-auto p-7 rounded-xl gap-7 h-[400px] relative">
                 {isLoading ? (
                     <div className="flex items-center justify-center h-full">
                         <MoonLoader size={28} />
@@ -159,15 +159,27 @@ const ProfilePage = () => {
                                 htmlFor="avatar">
                                 Avatar
                             </label>
-                            <InputForm
-                                className={
-                                    "border-b bg-white w-5/6  mb-0 focus:bg-[#1a94ff]/[10%]"
-                                }
-                                id="avatar"
-                                onChange={handOnchangeAvatar}
-                                type="file"
-                                name="img"
-                            />
+                            <div className="w-5/6 items-center flex">
+                                {avatar && (
+                                    <img
+                                        src={avatar}
+                                        alt=""
+                                        className="w-[100px] h-[100px] rounded px-2"
+                                    />
+                                )}
+                                <label
+                                    htmlFor="avatar"
+                                    className=" mb-0 focus:bg-[#1a94ff]/[10%] cursor-pointer py-2 px-4 text-center bg-blue-600 rounded text-white">
+                                    Chọn ảnh
+                                    <input
+                                        id="avatar"
+                                        type="file"
+                                        name="img"
+                                        onChange={handOnchangeAvatar}
+                                        style={{ display: "none" }}
+                                    />
+                                </label>
+                            </div>
                         </div>
                         <ButtonComponent
                             styleButton={

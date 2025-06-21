@@ -5,7 +5,7 @@ const Drawer = ({ open, onClose, title, children, width = "40%" }) => {
         <>
             {/* Overlay */}
             <div
-                className={`fixed inset-0 bg-black bg-opacity-30 z-40 transition-opacity duration-300 ${
+                className={`fixed inset-0 bg-black bg-opacity-30 z-[1] transition-opacity duration-300 ${
                     open
                         ? "opacity-100 pointer-events-auto"
                         : "opacity-0 pointer-events-none"

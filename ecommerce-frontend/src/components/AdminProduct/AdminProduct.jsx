@@ -118,6 +118,7 @@ const AdminProduct = () => {
     const { isLoading: isLoadingProducts, data: products } = useQuery({
         queryKey: ["products"],
         queryFn: getAllProduct,
+        refetchOnWindowFocus: false,
     });
     console.log("products", products);
 
@@ -446,7 +447,10 @@ const AdminProduct = () => {
         return () => clearTimeout(timer);
     }, [successMsg, errorMsg]);
 
-    if (!products) {
+    if (
+        !isLoadingProducts &&
+        (!products || !products.data || products.data.length === 0)
+    ) {
         return <div>No products found.</div>;
     }
 
@@ -687,7 +691,6 @@ const AdminProduct = () => {
                                                 "w-full py-1 px-2 focus:outline-none rounded"
                                             }
                                             required={true}
-                                            // name="name"
                                             value={stateProductDetails.name}
                                             onChange={handleOnChangeNameDetails}
                                         />
@@ -776,10 +779,15 @@ const AdminProduct = () => {
                                         Image:
                                     </label>
                                     <div className="w-5/6 border rounded">
+                                        <img
+                                            src={stateProductDetails.image}
+                                            alt=""
+                                            className="w-[100px] h-[100px] rounded px-2 mt-1"
+                                        />
                                         <InputComponent
                                             id={"Image"}
                                             className={
-                                                "w-full py-1 px-2 focus:outline-none rounded"
+                                                "py-1 px-2 focus:outline-none rounded"
                                             }
                                             required={true}
                                             onChange={
