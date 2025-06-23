@@ -1,33 +1,22 @@
-import { StarIcon } from "../Icons/Icons";
+import { StarIcon } from '../Icons/Icons'
 
 function CardComponent(props) {
-    const {
-        countInStock,
-        description,
-        image,
-        name,
-        price,
-        rating,
-        type,
-        discount,
-        sold,
-    } = props;
+    const { countInStock, description, image, name, price, rating, type, discount, sold } = props
     return (
         <div className="bg-white border rounded-md overflow-hidden hover:shadow-md hover:cursor-pointer">
-            <img
-                src="https://down-vn.img.susercontent.com/file/sg-11134301-7rdvs-m01bhb1twkvn33_tn.webp"
-                alt="iphone 16 promax"
-            />
+            <div className="h-[200px] flex items-center justify-center">
+                <img
+                    src={`${image}`}
+                    alt="iphone 16 promax"
+                    className="object-contain h-full h-full"
+                />
+            </div>
             <div className="p-2 ">
-                <div className="text-sm font-medium text-[#000000cc] line-clamp-2">
-                    {name}
-                </div>
+                <div className="text-sm font-medium text-[#000000cc] line-clamp-2 h-10">{name}</div>
                 <div className="text-[#ee4d2d] text-xs flex items-center mt-1">
                     <span>₫</span>
-                    <span className="text-base mr-1">{price}</span>
-                    <span className="px-1 py-[2px] bg-[#FEEEEA]">
-                        -{discount || 5}%
-                    </span>
+                    <span className="text-base mr-1">{price.toLocaleString()}</span>
+                    <span className="px-1 py-[2px] bg-[#FEEEEA]">-{discount || 5}%</span>
                 </div>
                 <div className="text-xs flex items-center mt-2">
                     <span>
@@ -41,7 +30,7 @@ function CardComponent(props) {
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
-export default CardComponent;
+export default CardComponent

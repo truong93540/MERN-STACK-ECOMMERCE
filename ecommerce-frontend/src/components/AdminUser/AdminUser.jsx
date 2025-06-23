@@ -247,7 +247,6 @@ const AdminUser = () => {
                 action: renderAction(),
             };
         });
-    console.log("users?.data?", users?.data);
 
     useEffect(() => {
         if (isSuccessUpdated && dataUpdated?.status === "OK") {

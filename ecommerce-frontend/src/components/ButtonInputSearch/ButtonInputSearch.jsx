@@ -2,7 +2,8 @@ import { SearchIcon } from "../Icons/Icons";
 import InputComponent from "../InputComponent/InputComponent";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
 
-function ButtonInputSearch({ textButton, placeholder }) {
+function ButtonInputSearch(props) {
+    const { textButton, placeholder, ...inputProps } = props;
     return (
         <form action="" method="get" className="flex w-full">
             <label htmlFor="default-search"></label>
@@ -11,6 +12,7 @@ function ButtonInputSearch({ textButton, placeholder }) {
                 id="default-search"
                 placeholder={placeholder}
                 className="grow h-10 px-4 rounded-l-lg outline-none"
+                {...inputProps}
             />
 
             <ButtonComponent

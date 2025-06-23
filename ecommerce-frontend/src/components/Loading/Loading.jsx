@@ -1,10 +1,12 @@
-import React from "react";
+import React from 'react'
 
-const Loading = ({ spinning = true, tip = "Loading...", children }) => {
+const Loading = ({ spinning = true, tip = 'Loading...', background, children }) => {
+    background = background || 'bg-white/60'
     return (
         <div className="relative">
             {spinning && (
-                <div className="absolute inset-0 z-[2] flex flex-col items-center justify-center bg-white/60">
+                <div
+                    className={`absolute inset-0 z-[2] flex flex-col items-center justify-center ${background}`}>
                     <svg
                         className="animate-spin h-8 w-8 text-blue-500 mb-2"
                         xmlns="http://www.w3.org/2000/svg"
@@ -27,11 +29,9 @@ const Loading = ({ spinning = true, tip = "Loading...", children }) => {
                     <span className="text-blue-500 text-sm">{tip}</span>
                 </div>
             )}
-            <div className={spinning ? "opacity-50 pointer-events-none" : ""}>
-                {children}
-            </div>
+            <div className={spinning ? 'opacity-50 pointer-events-none' : ''}>{children}</div>
         </div>
-    );
-};
+    )
+}
 
-export default Loading;
+export default Loading

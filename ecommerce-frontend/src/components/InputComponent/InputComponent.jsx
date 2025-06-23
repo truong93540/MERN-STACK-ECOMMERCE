@@ -4,6 +4,7 @@ function InputComponent({
     bordered,
     style,
     className,
+    onChange,
     ...rests
 }) {
     return (
@@ -13,9 +14,10 @@ function InputComponent({
             bordered={bordered}
             style={style}
             type="text"
-            {...rests}
             id={rests.id}
+            onChange={onChange}
             className={className}
+            {...rests}
         />
     );
 }

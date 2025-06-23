@@ -1,12 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import ButtonInputSearch from "../ButtonInputSearch/ButtonInputSearch";
 import { CartIcon, DownIcon, UserIcon } from "../Icons/Icons";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Menu from "../Popper/Menu/Menu";
 import { useEffect, useState } from "react";
+import { searchProduct } from "../../redux/slides/productSlice";
 
 function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
-    const numberOfProductsAddedToCart = 1;
+    const [userName, setUserName] = useState("");
+    const [avatar, setAvatar] = useState("");
+    const [search, setSearch] = useState("");
     const navigate = useNavigate();
     const handleNavigateLogin = () => {
         navigate("/sign-in");
@@ -15,8 +18,8 @@ function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
         navigate("/");
     };
     const user = useSelector((state) => state.user);
-    const [userName, setUserName] = useState("");
-    const [avatar, setAvatar] = useState(user?.avatar);
+    const dispatch = useDispatch();
+    const numberOfProductsAddedToCart = 1;
 
     useEffect(() => {
         setUserName(user.name);
@@ -38,6 +41,12 @@ function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
         },
     ];
 
+    const onSearch = (e) => {
+        console.log("e.target.value", e.target.value);
+        setSearch(e.target.value);
+        dispatch(searchProduct(e.target.value));
+    };
+
     return (
         <div className="bg-[#1A94FF] min-w-[1024px] h-[68px]">
             <div className="flex flex-row items-center flex-nowrap max-w-6xl m-auto justify-between h-full">
@@ -51,6 +60,7 @@ function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
                         <ButtonInputSearch
                             textButton="Tìm kiếm"
                             placeholder="Tìm kiếm tại đây"
+                            onChange={onSearch}
                         />
                     </div>
                 )}
