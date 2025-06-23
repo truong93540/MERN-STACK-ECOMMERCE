@@ -1,4 +1,4 @@
-const Product = require('../models/ProductModel');
+const Product = require("../models/ProductModel");
 
 const createProduct = (newProduct) => {
     return new Promise(async (resolve, reject) => {
@@ -11,8 +11,8 @@ const createProduct = (newProduct) => {
             });
             if (checkProduct !== null) {
                 resolve({
-                    status: 'OK',
-                    message: 'The name of product is already',
+                    status: "OK",
+                    message: "The name of product is already",
                 });
             }
             const createdProduct = await Product.create({
@@ -26,8 +26,8 @@ const createProduct = (newProduct) => {
             });
             if (createdProduct) {
                 resolve({
-                    status: 'OK',
-                    message: 'SUCCESS',
+                    status: "OK",
+                    message: "SUCCESS",
                     data: createdProduct,
                 });
             }
@@ -46,8 +46,8 @@ const updateProduct = (id, data) => {
 
             if (checkProduct === null) {
                 resolve({
-                    status: 'OK',
-                    message: 'The product is not defined',
+                    status: "OK",
+                    message: "The product is not defined",
                 });
             }
 
@@ -56,8 +56,8 @@ const updateProduct = (id, data) => {
             });
 
             resolve({
-                status: 'OK',
-                message: 'SUCCESS',
+                status: "OK",
+                message: "SUCCESS",
                 data: updateProduct,
             });
         } catch (e) {
@@ -76,14 +76,14 @@ const getDetailProduct = (id) => {
 
             if (product === null) {
                 resolve({
-                    status: 'OK',
-                    message: 'The product is not defined',
+                    status: "OK",
+                    message: "The product is not defined",
                 });
             }
 
             resolve({
-                status: 'OK',
-                message: 'SUCCESS',
+                status: "OK",
+                message: "SUCCESS",
                 data: product,
             });
         } catch (e) {
@@ -102,16 +102,16 @@ const deleteProduct = (id) => {
 
             if (checkProduct === null) {
                 resolve({
-                    status: 'OK',
-                    message: 'The product is not defined',
+                    status: "OK",
+                    message: "The product is not defined",
                 });
             }
 
             await Product.findByIdAndDelete(id);
 
             resolve({
-                status: 'OK',
-                message: 'Delete product success',
+                status: "OK",
+                message: "Delete product success",
             });
         } catch (e) {
             reject(e);
@@ -124,8 +124,8 @@ const deleteManyProduct = (ids) => {
         try {
             await Product.deleteMany({ _id: ids });
             resolve({
-                status: 'OK',
-                message: 'Delete product success',
+                status: "OK",
+                message: "Delete product success",
             });
         } catch (e) {
             reject(e);
@@ -137,7 +137,6 @@ const getAllProduct = (limit, page, sort, filter) => {
     return new Promise(async (resolve, reject) => {
         try {
             const totalProduct = await Product.countDocuments();
-            // console.log('filter', filter);
             if (filter) {
                 const label = filter[0];
                 const allObjectFilter = await Product.find({
@@ -146,8 +145,8 @@ const getAllProduct = (limit, page, sort, filter) => {
                     .limit(limit)
                     .skip(page * limit);
                 resolve({
-                    status: 'OK',
-                    message: 'Success',
+                    status: "OK",
+                    message: "Success",
                     data: allObjectFilter,
                     total: totalProduct,
                     pageCurrent: page + 1,
@@ -164,8 +163,8 @@ const getAllProduct = (limit, page, sort, filter) => {
                     .skip(page * limit)
                     .sort(objectSort);
                 resolve({
-                    status: 'OK',
-                    message: 'Success',
+                    status: "OK",
+                    message: "Success",
                     data: allProductSort,
                     total: totalProduct,
                     pageCurrent: page + 1,
@@ -175,11 +174,10 @@ const getAllProduct = (limit, page, sort, filter) => {
             const allProduct = await Product.find()
                 .limit(limit)
                 .skip(page * limit);
-            // .sort({ name: sort });
 
             resolve({
-                status: 'OK',
-                message: 'Success',
+                status: "OK",
+                message: "Success",
                 data: allProduct,
                 total: totalProduct,
                 pageCurrent: page + 1,
@@ -187,7 +185,22 @@ const getAllProduct = (limit, page, sort, filter) => {
             });
         } catch (e) {
             reject(e);
-            console.log('err', e);
+            console.log("err", e);
+        }
+    });
+};
+
+const getAllType = (limit, page, sort, filter) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const allType = await Product.distinct("type");
+            resolve({
+                status: "OK",
+                message: "Success",
+                data: allType,
+            });
+        } catch (e) {
+            reject(e);
         }
     });
 };
@@ -199,4 +212,5 @@ module.exports = {
     deleteProduct,
     getAllProduct,
     deleteManyProduct,
+    getAllType,
 };

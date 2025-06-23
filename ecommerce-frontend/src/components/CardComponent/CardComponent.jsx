@@ -1,9 +1,17 @@
 import { StarIcon } from '../Icons/Icons'
+import { useNavigate } from 'react-router-dom'
 
 function CardComponent(props) {
-    const { countInStock, description, image, name, price, rating, type, discount, sold } = props
+    const { countInStock, description, image, name, price, rating, type, discount, sold, id } =
+        props
+    const navigate = useNavigate()
+    const handleDetailProduct = (id) => {
+        navigate(`/product-details/${id}`)
+    }
     return (
-        <div className="bg-white border rounded-md overflow-hidden hover:shadow-md hover:cursor-pointer">
+        <div
+            className="bg-white border rounded-md overflow-hidden hover:shadow-md hover:cursor-pointer"
+            onClick={() => handleDetailProduct(id)}>
             <div className="h-[200px] flex items-center justify-center">
                 <img
                     src={`${image}`}

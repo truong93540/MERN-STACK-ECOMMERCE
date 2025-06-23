@@ -10,60 +10,58 @@ import Loading from '../../components/Loading/Loading'
 import { useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import useDebounce from '../../hooks/useDebounce'
+import { useSearchParams } from 'react-router-dom'
+import PaginationComponent from '../../components/PaginationComponent/PaginationComponent'
 
 function HomePage() {
+    const [searchParams, setSearchParams] = useSearchParams()
     const searchProduct = useSelector((state) => state?.product?.search)
     const searchDebounce = useDebounce(searchProduct, 1000)
-    const [rowProduct, setRowProduct] = useState(1)
-    const [allProducts, setAllProducts] = useState([])
-    const [limit, setLimit] = useState(6)
+    const pageParam = Number(searchParams.get('page')) || 1
+    const [page, setPage] = useState(pageParam)
     const [totalPage, setTotalPage] = useState(0)
-    const productInRow = 6
-    const arr = ['TV', 'Tu lanh', 'Laptop']
-    const fetchProductAll = async (search, limit, productInRow) => {
-        const res = await ProductServices.getAllProduct(search, limit, productInRow)
-        console.log('res', res)
+    const [typeProduct, setTypeProducts] = useState([])
+    const limit = 12
+
+    const fetchProductAll = async (search, limit, page) => {
+        const res = await ProductServices.getAllProduct(search, limit, page - 1)
         setTotalPage(res.totalPage)
         return res
     }
 
+    const fetchAllTypeProduct = async () => {
+        const res = await ProductServices.getAllType()
+        if (res?.status === 'OK') {
+            setTypeProducts(res?.data)
+        }
+        return res
+    }
+
+    useEffect(() => {
+        fetchAllTypeProduct()
+    }, [])
+
     const {
         isLoading,
         data: products,
-        isFetching,
+        // isFetching,
     } = useQuery({
-        queryKey: ['products', searchDebounce, limit],
-        queryFn: () => fetchProductAll(searchDebounce, limit, productInRow),
+        queryKey: ['products', searchDebounce, limit, page],
+        queryFn: () => fetchProductAll(searchDebounce, limit, page),
         retry: 3,
         retryDelay: 1000,
-        refetchOnWindowFocus: false,
         keepPreviousData: true,
     })
 
     useEffect(() => {
-        if (products?.data) {
-            if (rowProduct === 1) {
-                setAllProducts(products.data)
-            } else {
-                setAllProducts((prev) => [...prev, ...products.data])
-            }
-        }
-    }, [products, rowProduct])
-
-    const handleLoadMore = () => {
-        setLimit((prev) => prev + productInRow)
-    }
-
-    useEffect(() => {
-        setRowProduct(1)
-        setAllProducts([])
-    }, [searchDebounce])
+        setSearchParams({ page })
+    }, [page, setSearchParams])
 
     return (
         <div className="min-w-[1024px] min-h-96">
             <div className="max-w-6xl m-auto">
                 <div className="flex flex-nowrap h-11 items-center ">
-                    {arr.map((item) => {
+                    {typeProduct.map((item) => {
                         return <TypeProduct className="mr-4" name={item} key={item} />
                     })}
                 </div>
@@ -72,11 +70,11 @@ function HomePage() {
                 <div className="max-w-6xl m-auto">
                     <SliderComponent arrImage={[slider1, slider2, slider3]} />
                     <Loading
-                        spinning={isLoading && allProducts.length === 0}
+                        spinning={isLoading && (!products?.data || products?.data.length === 0)}
                         tip="Đang tải sản phẩm..."
                         background={'bg-[#efefef]'}>
                         <div className="mt-6 grid grid-cols-6 gap-4 min-h-[100px]">
-                            {allProducts.map((product) => {
+                            {(products?.data || []).map((product) => {
                                 return (
                                     <CardComponent
                                         key={product._id}
@@ -89,31 +87,21 @@ function HomePage() {
                                         type={product.type}
                                         sold={product.sold}
                                         discount={product.discount}
+                                        id={product._id}
                                     />
                                 )
                             })}
                         </div>
-                        <div className="w-full text-center mt-4 mb-4">
-                            {isFetching && allProducts.length > 0 && (
-                                <Loading
-                                    spinning={isFetching}
-                                    tip="Đang tải thêm sản phẩm..."
-                                    background={'bg-[#efefef]'}>
-                                    <div className="min-h-[100px] "></div>
-                                </Loading>
-                            )}
-                            {totalPage !== 1 && (
-                                <button
-                                    className="border border-[#0B74E5] text-[#0B74E5] w-60 h-[38px] rounded hover:text-[#fff] hover:bg-[#0D5CB6] mb-4"
-                                    onClick={handleLoadMore}>
-                                    Xem thêm
-                                </button>
-                            )}
-                            <div></div>
-                        </div>
+                        <div className="w-full text-center mt-4 mb-4"></div>
                     </Loading>
-
-                    {/* <NavBarComponent /> */}
+                    <PaginationComponent
+                        currentPage={page}
+                        totalPages={totalPage}
+                        onPageChange={(newPage) => {
+                            if (newPage !== page) setPage(newPage)
+                        }}
+                    />
+                    <div className="pb-5"></div>
                 </div>
             </div>
         </div>

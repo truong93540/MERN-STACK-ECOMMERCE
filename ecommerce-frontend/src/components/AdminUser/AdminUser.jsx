@@ -1,151 +1,150 @@
-import ButtonComponent from "../ButtonComponent/ButtonComponent";
-import { AiOutlineDelete, AiOutlineForm, AiOutlinePlus } from "react-icons/ai";
-import TableComponent from "../TableComponent/TableComponent";
-import InputComponent from "../InputComponent/InputComponent";
-import { MoonLoader } from "react-spinners";
-import DrawerComponent from "../DrawerComponent/DrawerComponent";
-import ModalComponent from "../ModalComponent/ModalComponent";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import useMutationHook from "../../hooks/useMutationHook";
-import * as message from "../../components/Message/Message";
-import { getBase64 } from "../../util";
-import * as UserService from "../../services/UserServices";
-import Loading from "../Loading/Loading";
+import ButtonComponent from '../ButtonComponent/ButtonComponent'
+import { AiOutlineDelete, AiOutlineForm, AiOutlinePlus } from 'react-icons/ai'
+import TableComponent from '../TableComponent/TableComponent'
+import InputComponent from '../InputComponent/InputComponent'
+import { MoonLoader } from 'react-spinners'
+import DrawerComponent from '../DrawerComponent/DrawerComponent'
+import ModalComponent from '../ModalComponent/ModalComponent'
+import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import useMutationHook from '../../hooks/useMutationHook'
+import * as message from '../../components/Message/Message'
+import { getBase64 } from '../../util'
+import * as UserService from '../../services/UserServices'
+import Loading from '../Loading/Loading'
 
 const AdminUser = () => {
-    const [isModelOpen, setIsModelOpen] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    const [rowSelected, setRowSelected] = useState(null);
-    const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-    const [shouldRenderModal, setShouldRenderModal] = useState(false);
-    const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
-    const [searchText, setSearchText] = useState("");
-    const [searchColumn, setSearchColumn] = useState("name");
-    const [isLoadingDetail, setIsLoadingDetail] = useState(false);
+    const [isModelOpen, setIsModelOpen] = useState(false)
+    const [showModal, setShowModal] = useState(false)
+    const [rowSelected, setRowSelected] = useState(null)
+    const [isOpenDrawer, setIsOpenDrawer] = useState(false)
+    const [shouldRenderModal, setShouldRenderModal] = useState(false)
+    const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+    const [searchText, setSearchText] = useState('')
+    const [searchColumn, setSearchColumn] = useState('name')
+    const [isLoadingDetail, setIsLoadingDetail] = useState(false)
 
-    const user = useSelector((state) => state.user);
-    const queryClient = useQueryClient();
+    const user = useSelector((state) => state.user)
+    const queryClient = useQueryClient()
 
     const [stateUserDetails, setStateUserDetails] = useState({
-        name: "",
-        email: "",
-        phone: "",
+        name: '',
+        email: '',
+        phone: '',
         isAdmin: false,
-        avatar: "",
-        address: "",
-    });
+        avatar: '',
+        address: '',
+    })
 
-    const [successMsg, setSuccessMsg] = useState("");
-    const [errorMsg, setErrorMsg] = useState("");
+    const [successMsg, setSuccessMsg] = useState('')
+    const [errorMsg, setErrorMsg] = useState('')
 
     const mutationUpdate = useMutationHook((data) => {
-        console.log("data", data);
-        const { id, token, ...rest } = data;
-        return UserService.updateUser(id, { ...rest }, token);
-    });
+        console.log('data', data)
+        const { id, token, ...rest } = data
+        return UserService.updateUser(id, { ...rest }, token)
+    })
 
     const mutationDeleted = useMutationHook((data) => {
-        const { id, token } = data;
-        return UserService.deleteUser(id, token);
-    });
+        const { id, token } = data
+        return UserService.deleteUser(id, token)
+    })
 
     const mutationDeletedMany = useMutationHook((data) => {
-        const { token, ...ids } = data;
-        return UserService.deleteManyUser(ids, token);
-    });
+        const { token, ...ids } = data
+        return UserService.deleteManyUser(ids, token)
+    })
 
     const handleDeleteManyUsers = (ids) => {
         mutationDeletedMany.mutate({
             ids: ids,
             token: user.access_token,
-        });
-    };
+        })
+    }
 
     const getAllUsers = async () => {
-        const res = await UserService.getAllUser();
-        console.log("res", res);
-        return res;
-    };
+        const res = await UserService.getAllUser()
+        return res
+    }
 
     const {
         data: dataUpdated,
         isPending: isLoadingUpdated,
         isSuccess: isSuccessUpdated,
         isError: isErrorUpdated,
-    } = mutationUpdate;
+    } = mutationUpdate
 
     const {
         data: dataDeleted,
         isPending: isLoadingDeleted,
         isSuccess: isSuccessDeleted,
         isError: isErrorDeleted,
-    } = mutationDeleted;
+    } = mutationDeleted
 
     const {
         data: dataDeletedMany,
         isPending: isLoadingDeletedMany,
         isSuccess: isSuccessDeletedMany,
         isError: isErrorDeletedMany,
-    } = mutationDeletedMany;
+    } = mutationDeletedMany
 
     const { isLoading: isLoadingUsers, data: users } = useQuery({
-        queryKey: ["users"],
+        queryKey: ['users'],
         queryFn: getAllUsers,
         refetchOnWindowFocus: false,
-    });
+    })
 
     const handleCancel = () => {
-        setIsModelOpen(false);
-    };
+        setIsModelOpen(false)
+    }
 
     const handleCloseDrawer = () => {
-        setIsOpenDrawer(false);
-    };
+        setIsOpenDrawer(false)
+    }
 
     const handleOnChangeNameDetails = (e) => {
         setStateUserDetails({
             ...stateUserDetails,
             name: e.target.value,
-        });
-    };
+        })
+    }
     const handleOnChangeEmailDetails = (e) => {
         setStateUserDetails({
             ...stateUserDetails,
             email: e.target.value,
-        });
-    };
+        })
+    }
     const handleOnChangePhoneDetails = (e) => {
         setStateUserDetails({
             ...stateUserDetails,
             phone: e.target.value,
-        });
-    };
+        })
+    }
 
     const handleOnChangeAddressDetails = (e) => {
         setStateUserDetails({
             ...stateUserDetails,
             address: e.target.value,
-        });
-    };
+        })
+    }
     const handleOnChangeAvatarDetails = async (e) => {
-        console.log("e.target.files", e.target.files);
-        const file = e.target.files[0];
-        console.log("file", file);
+        console.log('e.target.files', e.target.files)
+        const file = e.target.files[0]
+        console.log('file', file)
         if (file) {
-            const base64 = await getBase64(file);
+            const base64 = await getBase64(file)
             setStateUserDetails({
                 ...stateUserDetails,
                 avatar: base64,
-            });
+            })
         }
-    };
+    }
 
     const fetchGetDetailsUser = async (rowSelected) => {
-        setIsLoadingDetail(true);
-        const res = await UserService.getDetailsUser(rowSelected);
-        console.log("res.data", res.data);
+        setIsLoadingDetail(true)
+        const res = await UserService.getDetailsUser(rowSelected)
+        console.log('res.data', res.data)
         if (res?.data) {
             setStateUserDetails({
                 name: res?.data?.data?.name,
@@ -154,24 +153,24 @@ const AdminUser = () => {
                 isAdmin: res?.data?.data?.isAdmin,
                 avatar: res?.data?.data?.avatar,
                 address: res?.data?.data?.address,
-            });
+            })
         }
-        setIsLoadingDetail(false);
-    };
+        setIsLoadingDetail(false)
+    }
 
     useEffect(() => {
         if (rowSelected) {
-            fetchGetDetailsUser(rowSelected);
+            fetchGetDetailsUser(rowSelected)
         }
-    }, [rowSelected]);
+    }, [rowSelected])
 
     const handleDetailsProduct = () => {
         if (rowSelected) {
-            setIsLoadingDetail(true);
-            fetchGetDetailsUser(rowSelected);
+            setIsLoadingDetail(true)
+            // fetchGetDetailsUser(rowSelected)
         }
-        setIsOpenDrawer(true);
-    };
+        setIsOpenDrawer(true)
+    }
 
     const renderAction = () => {
         return (
@@ -181,7 +180,7 @@ const AdminUser = () => {
                     color="red"
                     className="cursor-pointer"
                     onClick={() => {
-                        setIsModalOpenDelete(true);
+                        setIsModalOpenDelete(true)
                     }}
                 />
                 <AiOutlineForm
@@ -191,51 +190,51 @@ const AdminUser = () => {
                     onClick={handleDetailsProduct}
                 />
             </div>
-        );
-    };
+        )
+    }
 
     const columns = [
         {
-            title: "Name",
-            dataIndex: "name",
+            title: 'Name',
+            dataIndex: 'name',
             sorter: (a, b) => a.name.localeCompare(b.name),
         },
         {
-            title: "Email",
-            dataIndex: "email",
+            title: 'Email',
+            dataIndex: 'email',
             sorter: (a, b) => a.email.localeCompare(b.email),
         },
         {
-            title: "Address",
-            dataIndex: "address",
+            title: 'Address',
+            dataIndex: 'address',
             sorter: (a, b) => a.address.localeCompare(b.address),
         },
 
         {
-            title: "Admin",
-            dataIndex: "isAdmin",
+            title: 'Admin',
+            dataIndex: 'isAdmin',
             filters: [
                 {
-                    text: "True",
+                    text: 'True',
                     value: true,
                 },
                 {
-                    text: "False",
+                    text: 'False',
                     value: false,
                 },
             ],
         },
         {
-            title: "Phone",
-            dataIndex: "phone",
+            title: 'Phone',
+            dataIndex: 'phone',
             sorter: (a, b) => a.phone - b.phone,
         },
         {
-            title: "Action",
-            dataIndex: "action",
+            title: 'Action',
+            dataIndex: 'action',
             render: renderAction,
         },
-    ];
+    ]
 
     const dataTable =
         users?.data?.length &&
@@ -243,98 +242,92 @@ const AdminUser = () => {
             return {
                 ...user,
                 key: user._id,
-                isAdmin: user.isAdmin ? "True" : "False",
+                isAdmin: user.isAdmin ? 'True' : 'False',
                 action: renderAction(),
-            };
-        });
+            }
+        })
 
     useEffect(() => {
-        if (isSuccessUpdated && dataUpdated?.status === "OK") {
-            setSuccessMsg("Sửa tài khoản thành công!");
-            queryClient.invalidateQueries(["users"]);
-            handleCloseDrawer();
-        } else if (
-            (isSuccessUpdated && dataUpdated?.status !== "OK") ||
-            isErrorUpdated
-        ) {
-            setErrorMsg(
-                dataUpdated?.message ||
-                    "Sửa tài khoản thất bại, vui lòng thử lại."
-            );
+        if (isSuccessUpdated && dataUpdated?.status === 'OK') {
+            setSuccessMsg('Sửa tài khoản thành công!')
+            queryClient.invalidateQueries(['users'])
+            handleCloseDrawer()
+        } else if ((isSuccessUpdated && dataUpdated?.status !== 'OK') || isErrorUpdated) {
+            setErrorMsg(dataUpdated?.message || 'Sửa tài khoản thất bại, vui lòng thử lại.')
         }
-    }, [isSuccessUpdated, isErrorUpdated, dataUpdated]);
+    }, [isSuccessUpdated, isErrorUpdated, dataUpdated])
 
     useEffect(() => {
-        if (isSuccessDeleted && dataDeleted?.status === "OK") {
-            setSuccessMsg("Xóa sản phẩm thành công!");
-            queryClient.invalidateQueries(["users"]);
-            handleCloseDrawer();
+        if (isSuccessDeleted && dataDeleted?.status === 'OK') {
+            setSuccessMsg('Xóa sản phẩm thành công!')
+            queryClient.invalidateQueries(['users'])
+            handleCloseDrawer()
         } else if (isErrorDeleted) {
-            setErrorMsg("Xóa sản phẩm thất bại, vui lòng thử lại.");
+            setErrorMsg('Xóa sản phẩm thất bại, vui lòng thử lại.')
         }
-    }, [isSuccessDeleted, isErrorDeleted]);
+    }, [isSuccessDeleted, isErrorDeleted])
 
     useEffect(() => {
-        if (isSuccessDeletedMany && dataDeletedMany?.status === "OK") {
-            setSuccessMsg("Xóa sản phẩm thành công!");
-            queryClient.invalidateQueries(["users"]);
-            handleCloseDrawer();
+        if (isSuccessDeletedMany && dataDeletedMany?.status === 'OK') {
+            setSuccessMsg('Xóa sản phẩm thành công!')
+            queryClient.invalidateQueries(['users'])
+            handleCloseDrawer()
         } else if (isErrorDeletedMany) {
-            setErrorMsg("Xóa sản phẩm thất bại, vui lòng thử lại.");
+            setErrorMsg('Xóa sản phẩm thất bại, vui lòng thử lại.')
         }
-    }, [isSuccessDeletedMany, isErrorDeletedMany]);
+    }, [isSuccessDeletedMany, isErrorDeletedMany])
 
     useEffect(() => {
         if (isModelOpen) {
-            setShouldRenderModal(true);
-            setTimeout(() => setShowModal(true), 10);
+            setShouldRenderModal(true)
+            setTimeout(() => setShowModal(true), 10)
         } else if (shouldRenderModal) {
-            setShowModal(false);
-            const timer = setTimeout(() => setShouldRenderModal(false), 150);
-            return () => clearTimeout(timer);
+            setShowModal(false)
+            const timer = setTimeout(() => setShouldRenderModal(false), 150)
+            return () => clearTimeout(timer)
         }
-    }, [isModelOpen]);
+    }, [isModelOpen])
 
     const handleCancelDelete = () => {
-        setIsModalOpenDelete(false);
-    };
+        setIsModalOpenDelete(false)
+    }
 
     const handleDeleteUser = () => {
         mutationDeleted.mutate({
             id: rowSelected,
             token: user.access_token,
-        });
-        setIsModalOpenDelete(false);
-    };
+        })
+        setIsModalOpenDelete(false)
+    }
 
     useEffect(() => {
-        let timer;
+        let timer
         if (successMsg || errorMsg) {
             timer = setTimeout(() => {
-                setSuccessMsg("");
-                setErrorMsg("");
-            }, 3000);
+                setSuccessMsg('')
+                setErrorMsg('')
+            }, 3000)
         }
-        return () => clearTimeout(timer);
-    }, [successMsg, errorMsg]);
+        return () => clearTimeout(timer)
+    }, [successMsg, errorMsg])
 
     if (!isLoadingUsers && (!users || !users.data || users.data.length === 0)) {
-        return <div>No user found.</div>;
+        return <div>No user found.</div>
     }
 
     const onUpdateUser = (e) => {
-        e.preventDefault();
-        console.log("rowSelected", rowSelected);
+        e.preventDefault()
+        console.log('rowSelected', rowSelected)
         mutationUpdate.mutate({
             id: rowSelected,
             token: user.access_token,
             ...stateUserDetails,
-        });
-    };
+        })
+    }
 
     const handleDeleteAll = (selectedIds) => {
-        console.log("Các id cần xóa:", selectedIds);
-    };
+        console.log('Các id cần xóa:', selectedIds)
+    }
 
     return (
         <>
@@ -346,7 +339,6 @@ const AdminUser = () => {
                     columns={columns}
                     data={dataTable}
                     isLoading={isLoadingUsers}
-                    rowSelected={rowSelected}
                     onRowSelect={setRowSelected}
                     searchText={searchText}
                     searchColumn={searchColumn}
@@ -360,7 +352,7 @@ const AdminUser = () => {
                 title="Chi tiết người dùng"
                 isOpen={isOpenDrawer}
                 onClose={() => {
-                    setIsOpenDrawer(false);
+                    setIsOpenDrawer(false)
                 }}
                 width="90%">
                 <Loading spinning={isLoadingDetail} tip="Loading...">
@@ -376,21 +368,17 @@ const AdminUser = () => {
                                             <InputComponent
                                                 id="Name"
                                                 className={
-                                                    "w-full py-1 px-2 focus:outline-none rounded"
+                                                    'w-full py-1 px-2 focus:outline-none rounded'
                                                 }
                                                 required={true}
                                                 // name="name"
                                                 value={stateUserDetails.name}
-                                                onChange={
-                                                    handleOnChangeNameDetails
-                                                }
+                                                onChange={handleOnChangeNameDetails}
                                             />
                                         </div>
                                     </div>
                                     <div className="flex w-full mt-3">
-                                        <label
-                                            htmlFor="Email"
-                                            className="w-1/6">
+                                        <label htmlFor="Email" className="w-1/6">
                                             Email:
                                         </label>
                                         <div className="w-5/6 border rounded">
@@ -398,19 +386,15 @@ const AdminUser = () => {
                                                 id="Email"
                                                 value={stateUserDetails.email}
                                                 className={
-                                                    "w-full py-1 px-2 focus:outline-none rounded"
+                                                    'w-full py-1 px-2 focus:outline-none rounded'
                                                 }
                                                 required={true}
-                                                onChange={
-                                                    handleOnChangeEmailDetails
-                                                }
+                                                onChange={handleOnChangeEmailDetails}
                                             />
                                         </div>
                                     </div>
                                     <div className="flex w-full mt-3">
-                                        <label
-                                            htmlFor="Phone"
-                                            className="w-1/6">
+                                        <label htmlFor="Phone" className="w-1/6">
                                             Phone:
                                         </label>
                                         <div className="w-5/6 border rounded">
@@ -418,20 +402,16 @@ const AdminUser = () => {
                                                 id="Phone"
                                                 value={stateUserDetails.phone}
                                                 className={
-                                                    "w-full py-1 px-2 focus:outline-none rounded"
+                                                    'w-full py-1 px-2 focus:outline-none rounded'
                                                 }
                                                 required={true}
-                                                onChange={
-                                                    handleOnChangePhoneDetails
-                                                }
+                                                onChange={handleOnChangePhoneDetails}
                                             />
                                         </div>
                                     </div>
 
                                     <div className="flex w-full mt-3">
-                                        <label
-                                            htmlFor="Address"
-                                            className="w-1/6">
+                                        <label htmlFor="Address" className="w-1/6">
                                             Address:
                                         </label>
                                         <div className="w-5/6 border rounded">
@@ -439,43 +419,33 @@ const AdminUser = () => {
                                                 id="Address"
                                                 value={stateUserDetails.address}
                                                 className={
-                                                    "w-full py-1 px-2 focus:outline-none rounded"
+                                                    'w-full py-1 px-2 focus:outline-none rounded'
                                                 }
                                                 required={true}
-                                                onChange={
-                                                    handleOnChangeAddressDetails
-                                                }
+                                                onChange={handleOnChangeAddressDetails}
                                             />
                                         </div>
                                     </div>
 
                                     <div className="flex w-full mt-3">
-                                        <label
-                                            htmlFor="Image"
-                                            className="w-1/6">
+                                        <label htmlFor="Image" className="w-1/6">
                                             Image:
                                         </label>
                                         <div className="w-5/6 border rounded">
                                             {stateUserDetails?.avatar && (
                                                 <>
                                                     <img
-                                                        src={
-                                                            stateUserDetails.avatar
-                                                        }
+                                                        src={stateUserDetails.avatar}
                                                         alt=""
                                                         className="w-[100px] h-[100px] rounded px-2 mt-1"
                                                     />
                                                 </>
                                             )}
                                             <InputComponent
-                                                id={"Image"}
-                                                className={
-                                                    "py-1 px-2 focus:outline-none rounded"
-                                                }
+                                                id={'Image'}
+                                                className={'py-1 px-2 focus:outline-none rounded'}
                                                 required={true}
-                                                onChange={
-                                                    handleOnChangeAvatarDetails
-                                                }
+                                                onChange={handleOnChangeAvatarDetails}
                                                 type="file"
                                             />
                                         </div>
@@ -488,12 +458,9 @@ const AdminUser = () => {
                                             type="submit"
                                             className=" flex items-center justify-center hover:cursor-pointer text-white bg-blue-700 hover:bg-blue-800 0 font-medium rounded-lg text-sm w-20 h-10 text-center ml-2">
                                             {isLoadingUpdated ? (
-                                                <MoonLoader
-                                                    size={20}
-                                                    color="#fff"
-                                                />
+                                                <MoonLoader size={20} color="#fff" />
                                             ) : (
-                                                "Submit"
+                                                'Submit'
                                             )}
                                         </button>
                                     </div>
@@ -511,7 +478,7 @@ const AdminUser = () => {
                 <div>Bạn có chắc xóa tài khoản này không?</div>
             </ModalComponent>
         </>
-    );
-};
+    )
+}
 
-export default AdminUser;
+export default AdminUser

@@ -1,4 +1,4 @@
-const ProductServices = require('../services/ProductService');
+const ProductServices = require("../services/ProductService");
 
 const createProduct = async (req, res) => {
     try {
@@ -15,8 +15,8 @@ const createProduct = async (req, res) => {
             !description
         ) {
             res.status(200).json({
-                status: 'ERR',
-                message: 'The input is required',
+                status: "ERR",
+                message: "The input is required",
             });
         }
         const response = await ProductServices.createProduct(req.body);
@@ -34,8 +34,8 @@ const updateProduct = async (req, res) => {
         const data = req.body;
         if (!productId) {
             res.status(200).json({
-                status: 'ERR',
-                message: 'The productId is required',
+                status: "ERR",
+                message: "The productId is required",
             });
         }
         const response = await ProductServices.updateProduct(productId, data);
@@ -52,8 +52,8 @@ const getDetailProduct = async (req, res) => {
         const productId = req.params.id;
         if (!productId) {
             res.status(200).json({
-                status: 'ERR',
-                message: 'The productId is required',
+                status: "ERR",
+                message: "The productId is required",
             });
         }
         const response = await ProductServices.getDetailProduct(productId);
@@ -71,8 +71,8 @@ const deleteProduct = async (req, res) => {
         const productId = req.params.id;
         if (!productId) {
             res.status(200).json({
-                status: 'ERR',
-                message: 'The productId is required',
+                status: "ERR",
+                message: "The productId is required",
             });
         }
         const response = await ProductServices.deleteProduct(productId);
@@ -89,8 +89,8 @@ const deleteMany = async (req, res) => {
         const ids = req.body.ids;
         if (!ids) {
             res.status(200).json({
-                status: 'ERR',
-                message: 'The ids is required',
+                status: "ERR",
+                message: "The ids is required",
             });
         }
         const response = await ProductServices.deleteManyProduct(ids);
@@ -119,11 +119,23 @@ const getAllProduct = async (req, res) => {
     }
 };
 
+const getAllType = async (req, res) => {
+    try {
+        const response = await ProductServices.getAllType();
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e,
+        });
+    }
+};
+
 module.exports = {
     createProduct,
-    updateProduct,
     getDetailProduct,
-    deleteProduct,
+    getAllType,
     getAllProduct,
+    updateProduct,
+    deleteProduct,
     deleteMany,
 };

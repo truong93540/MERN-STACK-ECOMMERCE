@@ -1,10 +1,14 @@
 import axios from 'axios'
 import { axiosJWT } from './UserServices'
 
-export const getAllProduct = async (search, limit) => {
+export const getAllProduct = async (search, limit, page) => {
     let url = `${process.env.REACT_APP_API_URL_BACKEND}/product/get-all?limit=${limit || 6}`
     if (search && search.length > 0) {
         url += `&filter=name&filter=${encodeURIComponent(search)}`
+    }
+    if (page) {
+        console.log('page', page)
+        url += `&page=${encodeURIComponent(page)}`
     }
     const res = await axios.get(url, { withCredentials: true })
     return res.data
@@ -62,5 +66,10 @@ export const deleteManyProduct = async (data, access_token) => {
             },
         }
     )
+    return res.data
+}
+
+export const getAllType = async () => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL_BACKEND}/product/get-all-type`)
     return res.data
 }
