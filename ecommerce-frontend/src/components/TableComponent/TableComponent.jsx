@@ -267,16 +267,22 @@ const TableComponent = (props) => {
                                                 </label>
                                             </div>
                                         </td>
-                                        {columns.map((col) => (
-                                            <td
-                                                key={`${col.dataIndex}-${
-                                                    item._id || item.id || rowIndex
-                                                }`}
-                                                className="px-6 py-4"
-                                                onClick={() => handleRowSelected(item._id)}>
-                                                {item[col.dataIndex]}
-                                            </td>
-                                        ))}
+                                        {columns.map((col) => {
+                                            return (
+                                                <td
+                                                    key={`${col.dataIndex}-${
+                                                        item._id || item.id || rowIndex
+                                                    }`}
+                                                    className="px-6 py-4"
+                                                    onClick={() => {
+                                                        if (col.dataIndex === 'action') {
+                                                            return handleRowSelected(item._id)
+                                                        }
+                                                    }}>
+                                                    {item[col.dataIndex]}
+                                                </td>
+                                            )
+                                        })}
                                     </tr>
                                 ))}
                             </tbody>

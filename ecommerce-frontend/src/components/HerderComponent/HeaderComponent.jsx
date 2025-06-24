@@ -1,51 +1,50 @@
-import { useNavigate } from "react-router-dom";
-import ButtonInputSearch from "../ButtonInputSearch/ButtonInputSearch";
-import { CartIcon, DownIcon, UserIcon } from "../Icons/Icons";
-import { useDispatch, useSelector } from "react-redux";
-import Menu from "../Popper/Menu/Menu";
-import { useEffect, useState } from "react";
-import { searchProduct } from "../../redux/slides/productSlice";
+import { useNavigate } from 'react-router-dom'
+import ButtonInputSearch from '../ButtonInputSearch/ButtonInputSearch'
+import { CartIcon, DownIcon, UserIcon } from '../Icons/Icons'
+import { useDispatch, useSelector } from 'react-redux'
+import Menu from '../Popper/Menu/Menu'
+import { useEffect, useState } from 'react'
+import { searchProduct } from '../../redux/slides/productSlice'
 
 function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
-    const [userName, setUserName] = useState("");
-    const [avatar, setAvatar] = useState("");
-    const [search, setSearch] = useState("");
-    const navigate = useNavigate();
+    const [userName, setUserName] = useState('')
+    const [avatar, setAvatar] = useState('')
+    const [search, setSearch] = useState('')
+    const navigate = useNavigate()
     const handleNavigateLogin = () => {
-        navigate("/sign-in");
-    };
+        navigate('/sign-in')
+    }
     const handleNavigateHome = () => {
-        navigate("/");
-    };
-    const user = useSelector((state) => state.user);
-    const dispatch = useDispatch();
-    const numberOfProductsAddedToCart = 1;
+        navigate('/')
+    }
+    const user = useSelector((state) => state.user)
+    const dispatch = useDispatch()
+    const numberOfProductsAddedToCart = 1
 
     useEffect(() => {
-        setUserName(user.name);
-        setAvatar(user?.avatar);
-    }, [user]);
+        setUserName(user.name)
+        setAvatar(user?.avatar)
+    }, [user])
 
     const userMenu = [
         {
-            title: "Thông tin người dùng",
-            type: "profile",
+            title: 'Thông tin người dùng',
+            type: 'profile',
         },
         {
-            title: "Quản lý hệ thống",
-            type: "system_admin",
+            title: 'Quản lý hệ thống',
+            type: 'system_admin',
         },
         {
-            title: "Đăng xuất",
-            type: "logout",
+            title: 'Đăng xuất',
+            type: 'logout',
         },
-    ];
+    ]
 
     const onSearch = (e) => {
-        console.log("e.target.value", e.target.value);
-        setSearch(e.target.value);
-        dispatch(searchProduct(e.target.value));
-    };
+        setSearch(e.target.value)
+        dispatch(searchProduct(e.target.value))
+    }
 
     return (
         <div className="bg-[#1A94FF] min-w-[1024px] h-[68px]">
@@ -68,7 +67,7 @@ function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
                     <div className="flex items-center cursor-pointer">
                         {user?.access_token ? (
                             <div className="flex gap-4 items-center ml-4">
-                                {avatar === "" ? (
+                                {avatar === '' ? (
                                     <UserIcon />
                                 ) : (
                                     <div>
@@ -81,17 +80,13 @@ function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
                                 )}
 
                                 <Menu items={userMenu} user={user}>
-                                    <div className="cursor-pointer">
-                                        {userName || user.email}
-                                    </div>
+                                    <div className="cursor-pointer">{userName || user.email}</div>
                                 </Menu>
                             </div>
                         ) : (
                             <div className="flex gap-4 items-center ml-4">
                                 <UserIcon />
-                                <div
-                                    className="flex flex-col ml-2 "
-                                    onClick={handleNavigateLogin}>
+                                <div className="flex flex-col ml-2 " onClick={handleNavigateLogin}>
                                     <span>Đăng nhập/Đăng ký</span>
                                     <span className="flex items-center">
                                         Tài khoản
@@ -102,7 +97,9 @@ function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
                         )}
                     </div>
                     {!isHiddenCart && (
-                        <div className="ml-5 flex items-center ">
+                        <div
+                            className="ml-5 flex items-center cursor-pointer"
+                            onClick={() => navigate('/order')}>
                             <div className="relative">
                                 <CartIcon />
                                 {numberOfProductsAddedToCart > 0 && (
@@ -117,7 +114,7 @@ function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
-export default HeaderComponent;
+export default HeaderComponent

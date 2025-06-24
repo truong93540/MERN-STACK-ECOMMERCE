@@ -420,6 +420,7 @@ const AdminProduct = () => {
         products?.data?.map((product) => {
             return { ...product, key: product._id, action: renderAction() }
         })
+    console.log('dataTable', dataTable)
 
     useEffect(() => {
         if (isSuccess && data?.message === 'The name of product is already') {

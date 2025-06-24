@@ -58,11 +58,13 @@ function HomePage() {
     }, [page, setSearchParams])
 
     return (
-        <div className="min-w-[1024px] min-h-96">
+        <div className="min-w-[1024px]">
             <div className="max-w-6xl m-auto">
                 <div className="flex flex-nowrap h-11 items-center ">
                     {typeProduct.map((item) => {
-                        return <TypeProduct className="mr-4" name={item} key={item} />
+                        return (
+                            <TypeProduct className="mr-4 cursor-pointer" name={item} key={item} />
+                        )
                     })}
                 </div>
             </div>
@@ -73,7 +75,7 @@ function HomePage() {
                         spinning={isLoading && (!products?.data || products?.data.length === 0)}
                         tip="Đang tải sản phẩm..."
                         background={'bg-[#efefef]'}>
-                        <div className="mt-6 grid grid-cols-6 gap-4 min-h-[100px]">
+                        <div className="mt-6 grid grid-cols-6 gap-4 min-h-[200px]">
                             {(products?.data || []).map((product) => {
                                 return (
                                     <CardComponent

@@ -11,7 +11,6 @@ function ProductDetailsComponent({ idProduct }) {
     const [numProduct, setNumProduct] = useState(1)
 
     const user = useSelector((state) => state.user)
-    console.log('user', user)
 
     const fetchGetProductDetails = async (id) => {
         if (id) {
