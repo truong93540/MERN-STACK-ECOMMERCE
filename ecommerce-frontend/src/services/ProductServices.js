@@ -7,17 +7,16 @@ export const getAllProduct = async (search, limit, page) => {
         url += `&filter=name&filter=${encodeURIComponent(search)}`
     }
     if (page) {
-        console.log('page', page)
         url += `&page=${encodeURIComponent(page)}`
     }
     const res = await axios.get(url, { withCredentials: true })
     return res.data
 }
 
-export const getProductType = async (type) => {
+export const getProductType = async (type, limit, page) => {
     if (type) {
         const res = await axios.get(
-            `${process.env.REACT_APP_API_URL_BACKEND}/product/get-all?filter=type&filter=${type}`
+            `${process.env.REACT_APP_API_URL_BACKEND}/product/get-all?filter=type&filter=${type}&limit=${limit}&page=${page}`
         )
         return res.data
     }

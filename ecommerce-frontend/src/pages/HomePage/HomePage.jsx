@@ -96,13 +96,15 @@ function HomePage() {
                         </div>
                         <div className="w-full text-center mt-4 mb-4"></div>
                     </Loading>
-                    <PaginationComponent
-                        currentPage={page}
-                        totalPages={totalPage}
-                        onPageChange={(newPage) => {
-                            if (newPage !== page) setPage(newPage)
-                        }}
-                    />
+                    {products?.totalPage > 0 && (
+                        <PaginationComponent
+                            currentPage={page}
+                            totalPages={totalPage}
+                            onPageChange={(newPage) => {
+                                if (newPage !== page) setPage(newPage)
+                            }}
+                        />
+                    )}
                     <div className="pb-5"></div>
                 </div>
             </div>

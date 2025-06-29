@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { AiOutlineAppstore, AiOutlineDown, AiOutlineUser } from 'react-icons/ai'
-import HeaderComponent from '../../components/HerderComponent/HeaderComponent'
+import HeaderComponent from '../../components/HeaderComponent/HeaderComponent'
 import AdminUser from '../../components/AdminUser/AdminUser'
 import AdminProduct from '../../components/AdminProduct/AdminProduct'
 

@@ -1,5 +1,5 @@
-const UserServices = require('../services/UserServices');
-const jwtService = require('../services/jwtService');
+const UserServices = require("../services/UserServices");
+const jwtService = require("../services/jwtService");
 
 const createUser = async (req, res) => {
     try {
@@ -17,20 +17,20 @@ const createUser = async (req, res) => {
         const isCheckEmail = reg.test(email);
         if (!email || !password || !confirmPassword) {
             res.status(200).json({
-                status: 'ERR',
-                message: 'The input is required',
+                status: "ERR",
+                message: "The input is required",
             });
             return;
         } else if (!isCheckEmail) {
             res.status(200).json({
-                status: 'ERR',
-                message: 'The input is email',
+                status: "ERR",
+                message: "The input is email",
             });
             return;
         } else if (password !== confirmPassword) {
             res.status(200).json({
-                status: 'ERR',
-                message: 'The password equal confirmPassword',
+                status: "ERR",
+                message: "The password equal confirmPassword",
             });
             return;
         }
@@ -51,23 +51,23 @@ const loginUser = async (req, res) => {
         const isCheckEmail = reg.test(email);
         if (!email || !password) {
             res.status(200).json({
-                status: 'ERR',
-                message: 'The input is required',
+                status: "ERR",
+                message: "The input is required",
             });
             return;
         } else if (!isCheckEmail) {
             res.status(200).json({
-                status: 'ERR',
-                message: 'The input is email',
+                status: "ERR",
+                message: "The input is email",
             });
             return;
         }
         const response = await UserServices.loginUser(req.body);
         const { refresh_token, ...newResponse } = response;
-        res.cookie('refresh_token', refresh_token, {
+        res.cookie("refresh_token", refresh_token, {
             httpOnly: true,
             secure: false,
-            samesite: 'Strict',
+            samesite: "Strict",
         });
         return res.status(200).json(newResponse);
     } catch (e) {
@@ -88,8 +88,8 @@ const updateUser = async (req, res) => {
 
         if (!userId) {
             return res.status(400).json({
-                status: 'ERR',
-                message: 'The userId is required',
+                status: "ERR",
+                message: "The userId is required",
             });
         }
         const response = await UserServices.updateUser(userId, data);
@@ -107,8 +107,8 @@ const deleteUser = async (req, res) => {
         const token = req.headers;
         if (!userId) {
             res.status(200).json({
-                status: 'ERR',
-                message: 'The userId is required',
+                status: "ERR",
+                message: "The userId is required",
             });
         }
         const response = await UserServices.deleteUser(userId);
@@ -125,8 +125,8 @@ const deleteMany = async (req, res) => {
         const ids = req.body.ids;
         if (!ids) {
             res.status(200).json({
-                status: 'ERR',
-                message: 'The ids are required',
+                status: "ERR",
+                message: "The ids are required",
             });
         }
         const response = await UserServices.deleteManyUser(ids);
@@ -140,7 +140,18 @@ const deleteMany = async (req, res) => {
 
 const getAllUser = async (req, res) => {
     try {
-        const response = await UserServices.getAllUser();
+        // const { limit, page, sort, filter } = req.query;
+        //         const response = await ProductServices.getAllProduct(
+        //             Number(limit) || 10,
+        //             Number(page) || 0,
+        //             sort,
+        //             filter
+        //         );
+        const { limit, page } = req.query;
+        const response = await UserServices.getAllUser(
+            Number(limit) || 10,
+            Number(page) || 0
+        );
         return res.status(200).json(response);
     } catch (e) {
         return res.status(404).json({
@@ -154,8 +165,8 @@ const getDetailsUser = async (req, res) => {
         const userId = req.params.id;
         if (!userId) {
             res.status(200).json({
-                status: 'ERR',
-                message: 'The userId is required',
+                status: "ERR",
+                message: "The userId is required",
             });
         }
         const response = await UserServices.getDetailsUser(userId);
@@ -172,8 +183,8 @@ const refreshToken = async (req, res) => {
         const token = req.cookies.refresh_token;
         if (!token) {
             res.status(200).json({
-                status: 'ERR',
-                message: 'The token is required',
+                status: "ERR",
+                message: "The token is required",
             });
             return;
         }
@@ -188,14 +199,14 @@ const refreshToken = async (req, res) => {
 
 const logoutUser = async (req, res) => {
     try {
-        res.clearCookie('refresh_token', {
+        res.clearCookie("refresh_token", {
             httpOnly: true,
             secure: false,
-            sameSite: 'Strict',
+            sameSite: "Strict",
         });
         return res.status(200).json({
-            status: 'OK',
-            message: 'Logout successfully',
+            status: "OK",
+            message: "Logout successfully",
         });
     } catch (e) {
         return res.status(404).json({

@@ -138,26 +138,28 @@ const getAllProduct = (limit, page, sort, filter) => {
         try {
             const totalProduct = await Product.countDocuments();
             if (filter) {
+                // console.log("filter", filter);
                 const label = filter[0];
-                const allObjectFilter = await Product.find({
-                    [label]: { $regex: filter[1] },
-                })
+                const value = filter[1];
+                const regex = {
+                    [label]: { $regex: value, $options: "i" }, // không phân biệt hoa thường
+                };
+                const totalFiltered = await Product.countDocuments(regex);
+                const allObjectFilter = await Product.find(regex)
                     .limit(limit)
                     .skip(page * limit);
                 resolve({
                     status: "OK",
                     message: "Success",
                     data: allObjectFilter,
-                    total: totalProduct,
+                    total: totalFiltered,
                     pageCurrent: page + 1,
-                    totalPage: Math.ceil(totalProduct / limit),
+                    totalPage: Math.ceil(totalFiltered / limit),
                 });
             }
             if (sort) {
-                // console.log('okok');
                 const objectSort = {};
                 objectSort[sort[1]] = sort[0];
-                // console.log('objectSort', objectSort);
                 const allProductSort = await Product.find()
                     .limit(limit)
                     .skip(page * limit)

@@ -13,6 +13,7 @@ import * as message from '../../components/Message/Message'
 import { getBase64 } from '../../util'
 import * as UserService from '../../services/UserServices'
 import Loading from '../Loading/Loading'
+import PaginationComponent from '../PaginationComponent/PaginationComponent'
 
 const AdminUser = () => {
     const [isModelOpen, setIsModelOpen] = useState(false)
@@ -24,6 +25,8 @@ const AdminUser = () => {
     const [searchText, setSearchText] = useState('')
     const [searchColumn, setSearchColumn] = useState('name')
     const [isLoadingDetail, setIsLoadingDetail] = useState(false)
+    const [pageCurrent, setPageCurrent] = useState(1)
+    const limitOnePage = 10
 
     const user = useSelector((state) => state.user)
     const queryClient = useQueryClient()
@@ -65,6 +68,7 @@ const AdminUser = () => {
 
     const getAllUsers = async () => {
         const res = await UserService.getAllUser()
+        console.log(res)
         return res
     }
 
@@ -90,8 +94,8 @@ const AdminUser = () => {
     } = mutationDeletedMany
 
     const { isLoading: isLoadingUsers, data: users } = useQuery({
-        queryKey: ['users'],
-        queryFn: getAllUsers,
+        queryKey: ['users', pageCurrent],
+        queryFn: () => getAllUsers(limitOnePage, pageCurrent - 1),
         refetchOnWindowFocus: false,
     })
 
@@ -167,7 +171,6 @@ const AdminUser = () => {
     const handleDetailsProduct = () => {
         if (rowSelected) {
             setIsLoadingDetail(true)
-            // fetchGetDetailsUser(rowSelected)
         }
         setIsOpenDrawer(true)
     }
@@ -197,17 +200,17 @@ const AdminUser = () => {
         {
             title: 'Name',
             dataIndex: 'name',
-            sorter: (a, b) => a.name.localeCompare(b.name),
+            sorter: (a, b) => (a.name || '').localeCompare(b.name || ''),
         },
         {
             title: 'Email',
             dataIndex: 'email',
-            sorter: (a, b) => a.email.localeCompare(b.email),
+            sorter: (a, b) => (a.email || '').localeCompare(b.email || ''),
         },
         {
             title: 'Address',
             dataIndex: 'address',
-            sorter: (a, b) => a.address.localeCompare(b.address),
+            sorter: (a, b) => (a.address || '').localeCompare(b.address || ''),
         },
 
         {
@@ -227,7 +230,7 @@ const AdminUser = () => {
         {
             title: 'Phone',
             dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
+            sorter: (a, b) => (a.phone || 0) - (b.phone || 0),
         },
         {
             title: 'Action',
@@ -346,6 +349,15 @@ const AdminUser = () => {
                     onSearchColumnChange={setSearchColumn}
                     handleDeleteMany={handleDeleteManyUsers}
                 />
+                {users?.totalPage > 0 && (
+                    <PaginationComponent
+                        currentPage={users.pageCurrent}
+                        totalPages={users.totalPage}
+                        onPageChange={(newPage) => {
+                            if (newPage !== pageCurrent) setPageCurrent(newPage)
+                        }}
+                    />
+                )}
             </div>
 
             <DrawerComponent

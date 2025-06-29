@@ -38,8 +38,8 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }) {
                     key={item}
                     className={`px-4 py-3 rounded-md ${
                         item === currentPage
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-white hover:bg-[#F3F4F6]'
+                            ? 'bg-blue-500 text-white border'
+                            : 'bg-white hover:bg-[#F3F4F6] border'
                     }`}
                     onClick={() => handleChangePage(item)}>
                     {item}
@@ -51,7 +51,7 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }) {
     return (
         <div className="flex gap-1 justify-center mt-4">
             <button
-                className="px-4 py-3 hover:bg-[#F3F4F6] bg-white rounded-md"
+                className="px-4 py-3 hover:bg-[#F3F4F6] bg-white rounded-md border"
                 onClick={() => handleChangePage(currentPage - 1)}
                 disabled={currentPage === 1}>
                 <ArrowLeftIcon />
@@ -60,7 +60,7 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }) {
             {renderPages()}
 
             <button
-                className="px-4 py-3 hover:bg-[#F3F4F6] bg-white rounded-md"
+                className="px-4 py-3 hover:bg-[#F3F4F6] bg-white rounded-md border"
                 onClick={() => handleChangePage(currentPage + 1)}
                 disabled={currentPage === totalPages}>
                 <ArrowRightIcon />

@@ -4,12 +4,13 @@ import { CartIcon, DownIcon, UserIcon } from '../Icons/Icons'
 import { useDispatch, useSelector } from 'react-redux'
 import Menu from '../Popper/Menu/Menu'
 import { useEffect, useState } from 'react'
-import { searchProduct } from '../../redux/slides/productSlice'
+import { searchProduct } from '../../redux/slides/productSlide'
 
 function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
     const [userName, setUserName] = useState('')
     const [avatar, setAvatar] = useState('')
     const [search, setSearch] = useState('')
+    const order = useSelector((state) => state.order)
     const navigate = useNavigate()
     const handleNavigateLogin = () => {
         navigate('/sign-in')
@@ -19,7 +20,6 @@ function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
     }
     const user = useSelector((state) => state.user)
     const dispatch = useDispatch()
-    const numberOfProductsAddedToCart = 1
 
     useEffect(() => {
         setUserName(user.name)
@@ -102,9 +102,9 @@ function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
                             onClick={() => navigate('/order')}>
                             <div className="relative">
                                 <CartIcon />
-                                {numberOfProductsAddedToCart > 0 && (
+                                {order?.orderItems?.length > 0 && (
                                     <span className="absolute top-[-4px] right-[-4px] bg-[#FF6357] w-[18px] h-[18px] rounded-full text-xs text-center border border-inherit">
-                                        {numberOfProductsAddedToCart}
+                                        {order?.orderItems?.length}
                                     </span>
                                 )}
                             </div>

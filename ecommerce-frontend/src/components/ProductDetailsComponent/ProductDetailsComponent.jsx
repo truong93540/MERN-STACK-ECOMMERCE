@@ -5,12 +5,16 @@ import * as ProductServices from '../../services/ProductServices'
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import { useQuery } from '@tanstack/react-query'
 import Loading from '../Loading/Loading'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { addOrderProduct } from '../../redux/slides/orderSlide'
 
 function ProductDetailsComponent({ idProduct }) {
     const [numProduct, setNumProduct] = useState(1)
-
     const user = useSelector((state) => state.user)
+    const navigate = useNavigate()
+    const location = useLocation()
+    const dispatch = useDispatch()
 
     const fetchGetProductDetails = async (id) => {
         if (id) {
@@ -18,6 +22,7 @@ function ProductDetailsComponent({ idProduct }) {
             return res.data
         }
     }
+    console.log('location', location)
     const { isLoading, data: productDetails } = useQuery({
         queryKey: ['product-details', idProduct],
         queryFn: () => fetchGetProductDetails(idProduct),
@@ -58,6 +63,27 @@ function ProductDetailsComponent({ idProduct }) {
 
         return stars
     }
+
+    const handleAddOrderProduct = () => {
+        if (!user?.id) {
+            navigate('/sign-in', { state: location?.pathname })
+        } else {
+            dispatch(
+                addOrderProduct({
+                    orderItem: {
+                        name: productDetails?.name,
+                        amount: numProduct,
+                        image: productDetails?.image,
+                        price: productDetails?.price,
+                        product: productDetails?._id,
+                    },
+                })
+            )
+        }
+    }
+
+    console.log('productDetails', productDetails)
+    console.log('user', user)
 
     return (
         <Loading spinning={isLoading}>
@@ -174,6 +200,7 @@ function ProductDetailsComponent({ idProduct }) {
                                 styleButton={'bg-[#FF3945] w-[220px] h-[48px] rounded'}
                                 textButton={'Chọn mua'}
                                 styleTextButton={'text-[#fff] text-[15px] font-bold'}
+                                onClick={handleAddOrderProduct}
                             />
                             <ButtonComponent
                                 size={40}

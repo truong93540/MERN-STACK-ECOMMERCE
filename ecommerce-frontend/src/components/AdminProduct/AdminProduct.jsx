@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux'
 import { useQueryClient } from '@tanstack/react-query'
 import ModalComponent from '../ModalComponent/ModalComponent'
 import Loading from '../Loading/Loading'
+import PaginationComponent from '../PaginationComponent/PaginationComponent'
 
 const AdminProduct = () => {
     const [isModelOpen, setIsModelOpen] = useState(false)
@@ -28,6 +29,8 @@ const AdminProduct = () => {
     const [typeProducts, setTypeProducts] = useState([])
     const [typeSelect, setTypeSelect] = useState('')
     const [typeSelectDetail, setTypeSelectDetail] = useState('')
+    const [pageCurrent, setPageCurrent] = useState(1)
+    const limitOnePage = 10
     const user = useSelector((state) => state.user)
     const queryClient = useQueryClient()
     const [stateProduct, setStateProduct] = useState({
@@ -83,8 +86,8 @@ const AdminProduct = () => {
         return ProductServices.deleteManyProduct(ids, token)
     })
 
-    const getAllProduct = async () => {
-        const response = await ProductServices.getAllProduct()
+    const getAllProduct = async (search, limit, page) => {
+        const response = await ProductServices.getAllProduct(search, limit, page)
         return response
     }
 
@@ -131,10 +134,11 @@ const AdminProduct = () => {
     } = mutationDeleted
 
     const { isLoading: isLoadingProducts, data: products } = useQuery({
-        queryKey: ['products'],
-        queryFn: getAllProduct,
+        queryKey: ['products', pageCurrent],
+        queryFn: () => getAllProduct('', limitOnePage, pageCurrent - 1),
         refetchOnWindowFocus: false,
     })
+    console.log('products', products)
 
     const handleOk = (e) => {
         e.preventDefault()
@@ -323,9 +327,6 @@ const AdminProduct = () => {
     }, [rowSelected])
 
     const handleDetailsProduct = () => {
-        // if (rowSelected) {
-        //     fetchGetProductDetails(rowSelected)
-        // }
         setTypeSelectDetail('')
 
         setIsOpenDrawer(true)
@@ -527,7 +528,6 @@ const AdminProduct = () => {
                     columns={columns}
                     data={dataTable}
                     isLoading={isLoadingProducts}
-                    // rowSelected={rowSelected}
                     onRowSelect={setRowSelected}
                     searchText={searchText}
                     searchColumn={searchColumn}
@@ -536,6 +536,15 @@ const AdminProduct = () => {
                     handleDeleteMany={handleDeleteManyProducts}
                 />
             </div>
+            {products?.totalPage > 0 && (
+                <PaginationComponent
+                    currentPage={products?.pageCurrent}
+                    totalPages={products?.totalPage}
+                    onPageChange={(newPage) => {
+                        if (newPage !== pageCurrent) setPageCurrent(newPage)
+                    }}
+                />
+            )}
             {shouldRenderModal && (
                 // modal add product
                 <div className="fixed p-4 w-full h-full top-0 left-0 bg-slate-500/50">

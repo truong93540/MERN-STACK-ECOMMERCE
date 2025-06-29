@@ -1,4 +1,4 @@
-import HeaderComponent from "../HerderComponent/HeaderComponent";
+import HeaderComponent from '../HeaderComponent/HeaderComponent'
 
 function DefaultComponent({ children }) {
     return (
@@ -6,7 +6,7 @@ function DefaultComponent({ children }) {
             <HeaderComponent />
             {children}
         </div>
-    );
+    )
 }
 
-export default DefaultComponent;
+export default DefaultComponent

@@ -1,6 +1,6 @@
-const User = require('../models/UserModel');
-const bcrypt = require('bcrypt');
-const { generalAccessToken, generalRefreshToken } = require('./jwtService');
+const User = require("../models/UserModel");
+const bcrypt = require("bcrypt");
+const { generalAccessToken, generalRefreshToken } = require("./jwtService");
 
 const createUser = (newUser) => {
     return new Promise(async (resolve, reject) => {
@@ -12,8 +12,8 @@ const createUser = (newUser) => {
             });
             if (checkUser !== null) {
                 resolve({
-                    status: 'ERR',
-                    message: 'The email is already',
+                    status: "ERR",
+                    message: "The email is already",
                 });
                 return;
             }
@@ -23,14 +23,14 @@ const createUser = (newUser) => {
                 name,
                 email,
                 password: hash,
-                phone: phone || '',
-                address: address || '',
-                avatar: avatar || '',
+                phone: phone || "",
+                address: address || "",
+                avatar: avatar || "",
             });
             if (createUser) {
                 resolve({
-                    status: 'OK',
-                    message: 'SUCCESS',
+                    status: "OK",
+                    message: "SUCCESS",
                     data: createdUser,
                 });
                 return;
@@ -51,8 +51,8 @@ const loginUser = (userLogin) => {
             });
             if (checkUser === null) {
                 resolve({
-                    status: 'ERR',
-                    message: 'The user is not defined',
+                    status: "ERR",
+                    message: "The user is not defined",
                 });
                 return;
             }
@@ -62,8 +62,8 @@ const loginUser = (userLogin) => {
             );
             if (!comparePassword) {
                 resolve({
-                    status: 'ERR',
-                    message: 'The password or user incorrect',
+                    status: "ERR",
+                    message: "The password or user incorrect",
                 });
                 return;
             }
@@ -78,8 +78,8 @@ const loginUser = (userLogin) => {
             });
 
             resolve({
-                status: 'OK',
-                message: 'SUCCESS',
+                status: "OK",
+                message: "SUCCESS",
                 access_token: access_token,
                 refresh_token: refresh_token,
             });
@@ -98,8 +98,8 @@ const updateUser = (id, data) => {
 
             if (checkUser === null) {
                 resolve({
-                    status: 'OK',
-                    message: 'The user is not defined',
+                    status: "OK",
+                    message: "The user is not defined",
                 });
             }
 
@@ -108,8 +108,8 @@ const updateUser = (id, data) => {
             });
 
             resolve({
-                status: 'OK',
-                message: 'SUCCESS',
+                status: "OK",
+                message: "SUCCESS",
                 data: updateUser,
             });
         } catch (e) {
@@ -128,16 +128,16 @@ const deleteUser = (id) => {
 
             if (checkUser === null) {
                 resolve({
-                    status: 'OK',
-                    message: 'The user is not defined',
+                    status: "OK",
+                    message: "The user is not defined",
                 });
             }
 
             await User.findByIdAndDelete(id);
 
             resolve({
-                status: 'OK',
-                message: 'Delete user success',
+                status: "OK",
+                message: "Delete user success",
             });
         } catch (e) {
             reject(e);
@@ -151,8 +151,8 @@ const deleteManyUser = (ids) => {
             await User.deleteMany({ _id: ids });
 
             resolve({
-                status: 'OK',
-                message: 'Delete user success',
+                status: "OK",
+                message: "Delete user success",
             });
         } catch (e) {
             reject(e);
@@ -160,19 +160,33 @@ const deleteManyUser = (ids) => {
     });
 };
 
-const getAllUser = () => {
+const getAllUser = (limit, page) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const allUser = await User.find();
+            // const allUser = await User.find();
+
+            const totalUser = await User.countDocuments();
+            const allUser = await User.find()
+                .limit(limit)
+                .skip(page * limit);
+
+            // resolve({
+            //     status: "OK",
+            //     message: "Success",
+            //     data: allUser,
+            // });
 
             resolve({
-                status: 'OK',
-                message: 'Success',
+                status: "OK",
+                message: "Success",
                 data: allUser,
+                total: totalUser,
+                pageCurrent: page + 1,
+                totalPage: Math.ceil(totalUser / limit),
             });
         } catch (e) {
             reject(e);
-            console.log('err');
+            console.log("err1");
         }
     });
 };
@@ -186,14 +200,14 @@ const getDetailsUser = (id) => {
 
             if (user === null) {
                 resolve({
-                    status: 'OK',
-                    message: 'The user is not defined',
+                    status: "OK",
+                    message: "The user is not defined",
                 });
             }
 
             resolve({
-                status: 'OK',
-                message: 'SUCCESS',
+                status: "OK",
+                message: "SUCCESS",
                 data: user,
             });
         } catch (e) {
