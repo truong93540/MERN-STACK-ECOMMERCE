@@ -110,7 +110,7 @@ const createVNPayPayment = async (newOrder) => {
             vnp_TxnRef: txnRef,
             vnp_OrderInfo: `Thanh toan don hang ${txnRef}`,
             vnp_OrderType: ProductCode.Other,
-            vnp_ReturnUrl: `http://localhost:${process.env.PORT}/api/order/vnpay-return`,
+            vnp_ReturnUrl: `${process.env.URL_BACKEND}${process.env.PORT}/api/order/vnpay-return`,
             vnp_Locale: VnpLocale.VN,
             vnp_CreateDate: dateFormat(new Date(), "yyyyMMddHHmmss"),
             vnp_ExpireDate: dateFormat(tomorrow, "yyyyMMddHHmmss"),
