@@ -41,11 +41,7 @@ function HomePage() {
         fetchAllTypeProduct()
     }, [])
 
-    const {
-        isLoading,
-        data: products,
-        // isFetching,
-    } = useQuery({
+    const { isLoading, data: products } = useQuery({
         queryKey: ['products', searchDebounce, limit, page],
         queryFn: () => fetchProductAll(searchDebounce, limit, page),
         retry: 3,
@@ -75,7 +71,7 @@ function HomePage() {
                         spinning={isLoading && (!products?.data || products?.data.length === 0)}
                         tip="Đang tải sản phẩm..."
                         background={'bg-[#efefef]'}>
-                        <div className="mt-6 grid grid-cols-6 gap-4 min-h-[200px]">
+                        <div className="mt-6 grid grid-cols-6 gap-4 min-h-[300px]">
                             {(products?.data || []).map((product) => {
                                 return (
                                     <CardComponent

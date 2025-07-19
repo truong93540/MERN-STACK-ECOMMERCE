@@ -1,4 +1,4 @@
-const warning = ({ mes = "Warning" }) => {
+const warning = ({ mes = 'Warning' }) => {
     return (
         <div
             className="flex items-center p-4 mb-4 rounded-xl text-sm  bg-amber-50 text-amber-500 fixed top-8"
@@ -17,13 +17,13 @@ const warning = ({ mes = "Warning" }) => {
             </svg>
             <span className="font-semibold mr-1">{mes}</span>
         </div>
-    );
-};
+    )
+}
 
-const Success = ({ mes = "Account created successfully" }) => {
+const Success = ({ mes = 'Account created successfully' }) => {
     return (
         <div
-            className="flex items-center p-4 mb-4 rounded-xl text-sm border border-emerald-400 bg-emerald-50 text-emerald-500 fixed top-8 z-10 left-1/2 transform -translate-x-1/2"
+            className="flex items-center p-4 mb-4 rounded-xl text-sm border border-emerald-400 bg-emerald-50 text-emerald-500 fixed top-8 left-1/2 transform -translate-x-1/2"
             role="alert">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -37,13 +37,12 @@ const Success = ({ mes = "Account created successfully" }) => {
                     strokeWidth="1.5"
                     d="M10.004 13.333V9.167M10 6.667h.007M10 18.333a8.333 8.333 0 1 1 0-16.666 8.333 8.333 0 0 1 0 16.666"></path>
             </svg>
-            <span className="font-semibold mr-1">Success</span>
-            {mes}
+            <span className="font-semibold mr-1">{mes}</span>
         </div>
-    );
-};
+    )
+}
 
-const Error = ({ mes = "Account creation failed" }) => {
+const Error = ({ mes = 'Account creation failed' }) => {
     return (
         <div
             className="flex items-center p-4 rounded-xl text-sm bg-red-500 text-white fixed top-8 z-[9999] left-1/2 transform -translate-x-1/2"
@@ -60,10 +59,9 @@ const Error = ({ mes = "Account creation failed" }) => {
                     strokeWidth="1.5"
                     d="M10.004 13.333V9.167M10 6.667h.007M10 18.333a8.333 8.333 0 1 1 0-16.666 8.333 8.333 0 0 1 0 16.666"></path>
             </svg>
-            <span className="font-semibold mr-1">Error</span>
-            {mes}
+            <span className="font-semibold mr-1">{mes}</span>
         </div>
-    );
-};
+    )
+}
 
-export { warning, Success, Error };
+export { warning, Success, Error }

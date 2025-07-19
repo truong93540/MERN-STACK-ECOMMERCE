@@ -1,3 +1,4 @@
+import { convertPrice } from '../../util'
 import { StarIcon } from '../Icons/Icons'
 import { useNavigate } from 'react-router-dom'
 
@@ -23,7 +24,7 @@ function CardComponent(props) {
                 <div className="text-sm font-medium text-[#000000cc] line-clamp-2 h-10">{name}</div>
                 <div className="text-[#ee4d2d] text-xs flex items-center mt-1">
                     <span>₫</span>
-                    <span className="text-base mr-1">{price?.toLocaleString()}</span>
+                    <span className="text-base mr-1">{convertPrice(price)}</span>
                     <span className="px-1 py-[2px] bg-[#FEEEEA]">-{discount || 5}%</span>
                 </div>
                 <div className="text-xs flex items-center mt-2">
@@ -33,7 +34,7 @@ function CardComponent(props) {
                     <span className="ml-[2px]">{rating}</span>
                     <div className="ml-1 relative">
                         <span className="before:content-[''] before:absolute before:w-[0.75px] before:h-3 before:bg-[#cfcfcf] before:top-[2px]"></span>
-                        <span className="pl-1">Đã bán {sold || 1000}</span>
+                        <span className="pl-1">Đã bán {sold || 0}</span>
                     </div>
                 </div>
             </div>

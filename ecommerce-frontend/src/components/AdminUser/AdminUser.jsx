@@ -44,7 +44,6 @@ const AdminUser = () => {
     const [errorMsg, setErrorMsg] = useState('')
 
     const mutationUpdate = useMutationHook((data) => {
-        console.log('data', data)
         const { id, token, ...rest } = data
         return UserService.updateUser(id, { ...rest }, token)
     })
@@ -66,9 +65,8 @@ const AdminUser = () => {
         })
     }
 
-    const getAllUsers = async () => {
-        const res = await UserService.getAllUser()
-        console.log(res)
+    const getAllUsers = async (token, limit, page) => {
+        const res = await UserService.getAllUser(token, limit, page)
         return res
     }
 
@@ -95,7 +93,7 @@ const AdminUser = () => {
 
     const { isLoading: isLoadingUsers, data: users } = useQuery({
         queryKey: ['users', pageCurrent],
-        queryFn: () => getAllUsers(limitOnePage, pageCurrent - 1),
+        queryFn: () => getAllUsers(user.access_token, limitOnePage, pageCurrent - 1),
         refetchOnWindowFocus: false,
     })
 
@@ -105,6 +103,12 @@ const AdminUser = () => {
 
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false)
+        setStateUserDetails({
+            name: '',
+            email: '',
+            phone: '',
+            isAdmin: false,
+        })
     }
 
     const handleOnChangeNameDetails = (e) => {
@@ -133,9 +137,7 @@ const AdminUser = () => {
         })
     }
     const handleOnChangeAvatarDetails = async (e) => {
-        console.log('e.target.files', e.target.files)
         const file = e.target.files[0]
-        console.log('file', file)
         if (file) {
             const base64 = await getBase64(file)
             setStateUserDetails({
@@ -148,7 +150,6 @@ const AdminUser = () => {
     const fetchGetDetailsUser = async (rowSelected) => {
         setIsLoadingDetail(true)
         const res = await UserService.getDetailsUser(rowSelected)
-        console.log('res.data', res.data)
         if (res?.data) {
             setStateUserDetails({
                 name: res?.data?.data?.name,
@@ -169,9 +170,6 @@ const AdminUser = () => {
     }, [rowSelected])
 
     const handleDetailsProduct = () => {
-        if (rowSelected) {
-            setIsLoadingDetail(true)
-        }
         setIsOpenDrawer(true)
     }
 
@@ -219,13 +217,16 @@ const AdminUser = () => {
             filters: [
                 {
                     text: 'True',
-                    value: true,
+                    value: 'true', // CHÚ Ý: dùng chuỗi ở đây
                 },
                 {
                     text: 'False',
-                    value: false,
+                    value: 'false',
                 },
             ],
+            onFilter: (value, record) => {
+                return record.isAdmin.toLowerCase() === value
+            },
         },
         {
             title: 'Phone',
@@ -253,6 +254,7 @@ const AdminUser = () => {
     useEffect(() => {
         if (isSuccessUpdated && dataUpdated?.status === 'OK') {
             setSuccessMsg('Sửa tài khoản thành công!')
+            setRowSelected('')
             queryClient.invalidateQueries(['users'])
             handleCloseDrawer()
         } else if ((isSuccessUpdated && dataUpdated?.status !== 'OK') || isErrorUpdated) {
@@ -263,6 +265,7 @@ const AdminUser = () => {
     useEffect(() => {
         if (isSuccessDeleted && dataDeleted?.status === 'OK') {
             setSuccessMsg('Xóa sản phẩm thành công!')
+            setRowSelected('')
             queryClient.invalidateQueries(['users'])
             handleCloseDrawer()
         } else if (isErrorDeleted) {
@@ -273,6 +276,7 @@ const AdminUser = () => {
     useEffect(() => {
         if (isSuccessDeletedMany && dataDeletedMany?.status === 'OK') {
             setSuccessMsg('Xóa sản phẩm thành công!')
+            setRowSelected('')
             queryClient.invalidateQueries(['users'])
             handleCloseDrawer()
         } else if (isErrorDeletedMany) {
@@ -320,16 +324,11 @@ const AdminUser = () => {
 
     const onUpdateUser = (e) => {
         e.preventDefault()
-        console.log('rowSelected', rowSelected)
         mutationUpdate.mutate({
             id: rowSelected,
             token: user.access_token,
             ...stateUserDetails,
         })
-    }
-
-    const handleDeleteAll = (selectedIds) => {
-        console.log('Các id cần xóa:', selectedIds)
     }
 
     return (
@@ -351,8 +350,8 @@ const AdminUser = () => {
                 />
                 {users?.totalPage > 0 && (
                     <PaginationComponent
-                        currentPage={users.pageCurrent}
-                        totalPages={users.totalPage}
+                        currentPage={users?.pageCurrent}
+                        totalPages={users?.totalPage}
                         onPageChange={(newPage) => {
                             if (newPage !== pageCurrent) setPageCurrent(newPage)
                         }}
@@ -365,6 +364,7 @@ const AdminUser = () => {
                 isOpen={isOpenDrawer}
                 onClose={() => {
                     setIsOpenDrawer(false)
+                    handleCloseDrawer()
                 }}
                 width="90%">
                 <Loading spinning={isLoadingDetail} tip="Loading...">

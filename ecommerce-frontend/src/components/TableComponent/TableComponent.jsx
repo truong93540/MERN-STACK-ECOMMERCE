@@ -53,12 +53,10 @@ const TableComponent = (props) => {
         const column = columns.find((col) => col.dataIndex === sortConfig.key)
         if (!column || !column.sorter) return filteredData
         const sorted = [...filteredData].sort(column.sorter)
-        console.log('columns', columns)
         return sortConfig.direction === 'asc' ? sorted : sorted.reverse()
     }, [filteredData, columns, sortConfig])
 
     const handleRowSelected = (id) => {
-        console.log('rowSelected', id)
         onRowSelect(id)
     }
 

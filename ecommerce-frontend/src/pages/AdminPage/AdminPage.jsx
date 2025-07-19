@@ -1,8 +1,14 @@
 import { useState } from 'react'
-import { AiOutlineAppstore, AiOutlineDown, AiOutlineUser } from 'react-icons/ai'
+import {
+    AiOutlineAppstore,
+    AiOutlineDown,
+    AiOutlineShoppingCart,
+    AiOutlineUser,
+} from 'react-icons/ai'
 import HeaderComponent from '../../components/HeaderComponent/HeaderComponent'
 import AdminUser from '../../components/AdminUser/AdminUser'
 import AdminProduct from '../../components/AdminProduct/AdminProduct'
+import AdminOrder from '../../components/AdminOrder/AdminOrder'
 
 const AdminPage = () => {
     const [submenuOpen, setSubmenuOpen] = useState([])
@@ -32,6 +38,12 @@ const AdminPage = () => {
                 { title: 'Submenu 3', content: 'Nội dung Sản phẩm 3' },
             ],
         },
+        {
+            title: 'Đơn hàng',
+            subMenu: false,
+            keySelected: 'orders',
+            icon: <AiOutlineShoppingCart />,
+        },
     ]
 
     const renderPage = (key) => {
@@ -40,6 +52,8 @@ const AdminPage = () => {
                 return <AdminUser />
             case 'products':
                 return <AdminProduct />
+            case 'orders':
+                return <AdminOrder />
             default:
                 return <AdminUser />
         }
@@ -66,7 +80,7 @@ const AdminPage = () => {
         <>
             <HeaderComponent isHiddenSearch={true} isHiddenCart={true} />
             <div className="flex">
-                <div className="h-screen border-r-[1px] w-72 bg-stone-50 select-none">
+                <div className="min-h-screen border-r-[1px] w-72 bg-stone-50 select-none">
                     {Menus.map((menu, index) => (
                         <div key={index}>
                             <li

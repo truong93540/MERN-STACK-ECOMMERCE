@@ -41,6 +41,7 @@ const AdminProduct = () => {
         image: '',
         type: '',
         countInStock: '',
+        discount: '',
     })
 
     const [stateProductDetails, setStateProductDetails] = useState({
@@ -51,13 +52,14 @@ const AdminProduct = () => {
         image: '',
         type: '',
         countInStock: '',
+        discoutn: '',
     })
 
     const [successMsg, setSuccessMsg] = useState('')
     const [errorMsg, setErrorMsg] = useState('')
 
     const mutation = useMutationHook((data) => {
-        const { name, price, description, rating, image, type, countInStock } = data
+        const { name, price, description, rating, image, type, countInStock, discount } = data
 
         return ProductServices.createProduct({
             name,
@@ -67,6 +69,7 @@ const AdminProduct = () => {
             image,
             type,
             countInStock,
+            discount,
         })
     })
 
@@ -138,7 +141,6 @@ const AdminProduct = () => {
         queryFn: () => getAllProduct('', limitOnePage, pageCurrent - 1),
         refetchOnWindowFocus: false,
     })
-    console.log('products', products)
 
     const handleOk = (e) => {
         e.preventDefault()
@@ -154,6 +156,7 @@ const AdminProduct = () => {
             image: '',
             type: '',
             countInStock: '',
+            discount: '',
         })
     }
 
@@ -167,6 +170,7 @@ const AdminProduct = () => {
             image: '',
             type: '',
             countInStock: '',
+            discount: '',
         })
     }
 
@@ -219,9 +223,7 @@ const AdminProduct = () => {
         })
     }
     const handleOnChangeImage = async (e) => {
-        console.log('e.target.files', e.target.files)
         const file = e.target.files[0]
-        console.log('file', file)
         if (file) {
             const base64 = await getBase64(file)
             setStateProduct({
@@ -234,6 +236,13 @@ const AdminProduct = () => {
         setStateProduct({
             ...stateProduct,
             rating: e.target.value,
+        })
+    }
+
+    const handleOnChangeDiscount = (e) => {
+        setStateProduct({
+            ...stateProduct,
+            discount: e.target.value,
         })
     }
 
@@ -302,6 +311,13 @@ const AdminProduct = () => {
         })
     }
 
+    const handleOnChangeDiscountDetails = (e) => {
+        setStateProductDetails({
+            ...stateProductDetails,
+            discount: e.target.value,
+        })
+    }
+
     const fetchGetProductDetails = async (id) => {
         setIsLoadingOpenDrawerUpdate(true)
         const res = await ProductServices.getDetailProduct(id)
@@ -314,13 +330,13 @@ const AdminProduct = () => {
                 image: res?.data.image,
                 type: res?.data.type,
                 countInStock: res?.data.countInStock,
+                discount: res?.data.discount,
             })
         }
         setIsLoadingOpenDrawerUpdate(false)
     }
 
     useEffect(() => {
-        console.log('rowSelected', rowSelected)
         if (rowSelected) {
             fetchGetProductDetails(rowSelected)
         }
@@ -421,13 +437,14 @@ const AdminProduct = () => {
         products?.data?.map((product) => {
             return { ...product, key: product._id, action: renderAction() }
         })
-    console.log('dataTable', dataTable)
 
     useEffect(() => {
         if (isSuccess && data?.message === 'The name of product is already') {
             setErrorMsg('Sản phẩm đã tồn tại!')
+            setRowSelected('')
         } else if (isSuccess && data?.message === 'SUCCESS') {
             setSuccessMsg('Tạo sản phẩm thành công!')
+            queryClient.invalidateQueries(['products'])
             handleCancel()
         } else if (isError) {
             setErrorMsg('Tạo sản phẩm thất bại, vui lòng thử lại.')
@@ -437,6 +454,7 @@ const AdminProduct = () => {
     useEffect(() => {
         if (isSuccessUpdated && dataUpdated?.status === 'OK') {
             setSuccessMsg('Sửa sản phẩm thành công!')
+            setRowSelected('')
             queryClient.invalidateQueries(['products'])
             handleCloseDrawer()
         } else if (isErrorUpdated) {
@@ -592,8 +610,7 @@ const AdminProduct = () => {
                                                 'w-full py-1 px-2 focus:outline-none rounded'
                                             }
                                             required={true}
-                                            // name="name"
-                                            value={stateProduct.name}
+                                            value={stateProduct?.name}
                                             onChange={handleOnChangeName}
                                         />
                                     </div>
@@ -608,7 +625,7 @@ const AdminProduct = () => {
                                             value={
                                                 typeSelect === 'add_type'
                                                     ? 'add_type'
-                                                    : stateProduct.type
+                                                    : stateProduct?.type
                                             }
                                             onChange={handleOnChangeType}>
                                             {typeProducts.map((typeProduct) => (
@@ -627,7 +644,7 @@ const AdminProduct = () => {
                                                     'w-full py-1 px-2 focus:outline-none mt-1 border rounded'
                                                 }
                                                 required={true}
-                                                value={stateProduct.type}
+                                                value={stateProduct?.type}
                                                 onChange={handleOnChangeNewType}
                                                 placeholder={'Nhập type mới vào đây'}
                                             />
@@ -641,12 +658,14 @@ const AdminProduct = () => {
                                     <div className="w-4/6 border rounded">
                                         <InputComponent
                                             id="CountInStock"
-                                            value={stateProduct.countInStock}
+                                            value={stateProduct?.countInStock}
                                             className={
-                                                'w-full py-1 px-2 focus:outline-none rounded'
+                                                'w-full py-1 px-2 focus:outline-none rounded [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                                             }
                                             required={true}
                                             onChange={handleOnChangeCountInStock}
+                                            type={'number'}
+                                            placeholder={'0'}
                                         />
                                     </div>
                                 </div>
@@ -657,12 +676,14 @@ const AdminProduct = () => {
                                     <div className="w-4/6 border rounded">
                                         <InputComponent
                                             id={'Price'}
-                                            value={stateProduct.price}
+                                            value={stateProduct?.price}
                                             className={
-                                                'w-full py-1 px-2 focus:outline-none rounded'
+                                                'w-full py-1 px-2 focus:outline-none rounded [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                                             }
                                             required={true}
                                             onChange={handleOnChangePrice}
+                                            type={'number'}
+                                            placeholder={'0'}
                                         />
                                     </div>
                                 </div>
@@ -673,7 +694,7 @@ const AdminProduct = () => {
                                     <div className="w-4/6 border rounded">
                                         <InputComponent
                                             id={'Description'}
-                                            value={stateProduct.description}
+                                            value={stateProduct?.description}
                                             className={
                                                 'w-full py-1 px-2 focus:outline-none rounded'
                                             }
@@ -705,12 +726,32 @@ const AdminProduct = () => {
                                     <div className="w-4/6 border rounded">
                                         <InputComponent
                                             id={'Rating'}
-                                            value={stateProduct.rating}
+                                            value={stateProduct?.rating}
                                             className={
-                                                'w-full py-1 px-2 focus:outline-none rounded'
+                                                'w-full py-1 px-2 focus:outline-none rounded [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                                             }
                                             required={true}
                                             onChange={handleOnChangeRating}
+                                            type={'number'}
+                                            placeholder={'0'}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex w-full mt-3">
+                                    <label htmlFor="Discount" className="w-2/6">
+                                        Discount:
+                                    </label>
+                                    <div className="w-4/6 border rounded">
+                                        <InputComponent
+                                            id={'Discount'}
+                                            value={stateProduct?.discount}
+                                            className={
+                                                'w-full py-1 px-2 focus:outline-none rounded [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                                            }
+                                            required={true}
+                                            onChange={handleOnChangeDiscount}
+                                            type={'number'}
+                                            placeholder={'0'}
                                         />
                                     </div>
                                 </div>
@@ -876,6 +917,22 @@ const AdminProduct = () => {
                                                 }
                                                 required={true}
                                                 onChange={handleOnChangeRatingDetails}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex w-full mt-3">
+                                        <label htmlFor="Discount" className="w-1/6">
+                                            Discount:
+                                        </label>
+                                        <div className="w-5/6 border rounded">
+                                            <InputComponent
+                                                id={'Discount'}
+                                                value={stateProductDetails.discount}
+                                                className={
+                                                    'w-full py-1 px-2 focus:outline-none rounded'
+                                                }
+                                                required={true}
+                                                onChange={handleOnChangeDiscountDetails}
                                             />
                                         </div>
                                     </div>

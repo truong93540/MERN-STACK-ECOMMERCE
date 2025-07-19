@@ -124,7 +124,6 @@ const deleteUser = (id) => {
             const checkUser = await User.findOne({
                 _id: id,
             });
-            // console.log("checkUser", checkUser);
 
             if (checkUser === null) {
                 resolve({
@@ -163,18 +162,10 @@ const deleteManyUser = (ids) => {
 const getAllUser = (limit, page) => {
     return new Promise(async (resolve, reject) => {
         try {
-            // const allUser = await User.find();
-
             const totalUser = await User.countDocuments();
             const allUser = await User.find()
                 .limit(limit)
                 .skip(page * limit);
-
-            // resolve({
-            //     status: "OK",
-            //     message: "Success",
-            //     data: allUser,
-            // });
 
             resolve({
                 status: "OK",

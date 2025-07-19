@@ -2,8 +2,16 @@ const Product = require("../models/ProductModel");
 
 const createProduct = (newProduct) => {
     return new Promise(async (resolve, reject) => {
-        const { name, image, type, price, countInStock, rating, description } =
-            newProduct;
+        const {
+            name,
+            image,
+            type,
+            price,
+            countInStock,
+            rating,
+            description,
+            discount,
+        } = newProduct;
 
         try {
             const checkProduct = await Product.findOne({
@@ -20,9 +28,10 @@ const createProduct = (newProduct) => {
                 image,
                 type,
                 price,
-                countInStock,
+                countInStock: Number(countInStock),
                 rating,
                 description,
+                discount: Number(discount),
             });
             if (createdProduct) {
                 resolve({
@@ -72,7 +81,6 @@ const getDetailProduct = (id) => {
             const product = await Product.findOne({
                 _id: id,
             });
-            // console.log("checkUser", checkUser);
 
             if (product === null) {
                 resolve({
@@ -98,7 +106,6 @@ const deleteProduct = (id) => {
             const checkProduct = await Product.findOne({
                 _id: id,
             });
-            // console.log("checkUser", checkUser);
 
             if (checkProduct === null) {
                 resolve({
@@ -138,7 +145,6 @@ const getAllProduct = (limit, page, sort, filter) => {
         try {
             const totalProduct = await Product.countDocuments();
             if (filter) {
-                // console.log("filter", filter);
                 const label = filter[0];
                 const value = filter[1];
                 const regex = {

@@ -8,7 +8,10 @@ const initialState = {
     avatar: '',
     id: '',
     access_token: '',
+    refresh_token: '',
     isAdmin: false,
+    city: '',
+    loading: false,
 }
 
 export const userSlide = createSlice({
@@ -25,6 +28,9 @@ export const userSlide = createSlice({
                 avatar = state.avatar,
                 _id = state.id,
                 isAdmin = state.isAdmin,
+                city = state.city,
+                loading = state.loading,
+                refresh_token = state.refresh_token,
             } = action.payload
             state.name = name
             state.email = email
@@ -34,6 +40,9 @@ export const userSlide = createSlice({
             state.id = _id
             state.access_token = access_token
             state.isAdmin = isAdmin
+            state.city = city
+            state.loading = loading
+            state.refresh_token = refresh_token
         },
         resetUser: (state) => {
             state.name = ''
@@ -42,7 +51,11 @@ export const userSlide = createSlice({
             state.phone = ''
             state.avatar = ''
             state.access_token = ''
+            state.refresh_token = ''
             state.isAdmin = false
+            state.city = ''
+            state.loading = false
+            state.id = ''
         },
     },
 })

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Menu from '../Popper/Menu/Menu'
 import { useEffect, useState } from 'react'
 import { searchProduct } from '../../redux/slides/productSlide'
+import Loading from '../Loading/Loading'
 
 function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
     const [userName, setUserName] = useState('')
@@ -22,7 +23,7 @@ function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        setUserName(user.name)
+        setUserName(user?.name)
         setAvatar(user?.avatar)
     }, [user])
 
@@ -34,6 +35,10 @@ function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
         {
             title: 'Quản lý hệ thống',
             type: 'system_admin',
+        },
+        {
+            title: 'Đơn hàng của tôi',
+            type: 'my_order',
         },
         {
             title: 'Đăng xuất',
@@ -68,7 +73,7 @@ function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
                         {user?.access_token ? (
                             <div className="flex gap-4 items-center ml-4">
                                 {avatar === '' ? (
-                                    <UserIcon />
+                                    <div>{user?.loading ? <div></div> : <UserIcon />}</div>
                                 ) : (
                                     <div>
                                         <img
@@ -84,15 +89,23 @@ function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
                                 </Menu>
                             </div>
                         ) : (
-                            <div className="flex gap-4 items-center ml-4">
-                                <UserIcon />
-                                <div className="flex flex-col ml-2 " onClick={handleNavigateLogin}>
-                                    <span>Đăng nhập/Đăng ký</span>
-                                    <span className="flex items-center">
-                                        Tài khoản
-                                        <DownIcon />
-                                    </span>
-                                </div>
+                            <div>
+                                {user?.loading ? (
+                                    <div></div>
+                                ) : (
+                                    <div className="flex gap-4 items-center ml-4">
+                                        <UserIcon />
+                                        <div
+                                            className="flex flex-col ml-2 "
+                                            onClick={handleNavigateLogin}>
+                                            <span>Đăng nhập/Đăng ký</span>
+                                            <span className="flex items-center">
+                                                Tài khoản
+                                                <DownIcon />
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

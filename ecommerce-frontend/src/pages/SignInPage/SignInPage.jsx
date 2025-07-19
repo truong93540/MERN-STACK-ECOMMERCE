@@ -26,12 +26,10 @@ function SignInPage() {
     }
 
     const mutation = useMutationHook((data) => UserServices.loginUser(data))
-    // console.log('mutation', mutation)
 
     const { data, isPending, isSuccess } = mutation
 
     useEffect(() => {
-        console.log('mutation', mutation)
         if (data?.data?.status === 'OK') {
             if (location?.state) {
                 navigate(location?.state)
@@ -39,22 +37,21 @@ function SignInPage() {
                 navigate('/')
             }
             localStorage.setItem('access_token', data?.data?.access_token)
+            localStorage.setItem('refresh_token', data?.data?.refresh_token)
             if (data?.data?.access_token) {
                 const decoded = jwtDecode(data?.data?.access_token)
-                console.log('decode', decoded)
                 if (decoded?.id) {
                     handleGetDetailsUser(decoded?.id, data?.data?.access_token)
                 }
             }
-            console.log('location', location)
         }
     }, [isSuccess])
 
     const handleGetDetailsUser = async (id, token) => {
         try {
+            const refresh_token = localStorage.getItem('refresh_token')
             const res = await UserServices.getDetailsUser(id, token)
-            console.log('res', res)
-            dispatch(updateUser({ ...res?.data?.data, access_token: token }))
+            dispatch(updateUser({ ...res?.data?.data, access_token: token, refresh_token }))
         } catch (error) {
             console.error('Lỗi khi lấy thông tin user:', error)
         }

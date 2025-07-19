@@ -67,9 +67,10 @@ const loginUser = async (req, res) => {
         res.cookie("refresh_token", refresh_token, {
             httpOnly: true,
             secure: false,
-            samesite: "Strict",
+            sameSite: "strict",
+            path: "/",
         });
-        return res.status(200).json(newResponse);
+        return res.status(200).json({ ...newResponse, refresh_token });
     } catch (e) {
         return res.status(404).json({
             message: e,
@@ -140,13 +141,6 @@ const deleteMany = async (req, res) => {
 
 const getAllUser = async (req, res) => {
     try {
-        // const { limit, page, sort, filter } = req.query;
-        //         const response = await ProductServices.getAllProduct(
-        //             Number(limit) || 10,
-        //             Number(page) || 0,
-        //             sort,
-        //             filter
-        //         );
         const { limit, page } = req.query;
         const response = await UserServices.getAllUser(
             Number(limit) || 10,
@@ -180,7 +174,7 @@ const getDetailsUser = async (req, res) => {
 
 const refreshToken = async (req, res) => {
     try {
-        const token = req.cookies.refresh_token;
+        const token = req.headers.token.split(" ")[1];
         if (!token) {
             res.status(200).json({
                 status: "ERR",

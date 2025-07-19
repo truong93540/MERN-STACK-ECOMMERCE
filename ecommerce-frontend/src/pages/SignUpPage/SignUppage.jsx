@@ -78,7 +78,6 @@ function SignUpPage() {
             elementPasswordSignIn.classList.remove('border-red-400')
             elementPasswordSignIn.classList.remove('border')
         }
-        // console.log("confirm password", value);
     }
 
     const handleSubmitForm = () => {
@@ -113,7 +112,6 @@ function SignUpPage() {
     }
 
     const handleClickOutside = (e) => {
-        console.log('modalRef', modalRef.current)
         if (modalRef.current && !modalRef.current.contains(e.target)) {
             navigate('/')
         }
