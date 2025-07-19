@@ -2,7 +2,7 @@ const Order = require("../models/OrderProduct");
 const Product = require("../models/ProductModel");
 const TempOrder = require("../models/TempOrder");
 const User = require("../models/UserModel");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const EmailService = require("./EmailService");
 const { VNPay, ProductCode, VnpLocale, dateFormat } = require("vnpay");
 
