@@ -1,5 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import TypeProduct from '../../components/TypeProduct/TypeProduct'
+import { useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { FaFacebookMessenger } from 'react-icons/fa'
 import SliderComponent from '../../components/SliderComponent/SliderComponent'
 import slider1 from '../../assets/images/slider1.jpg'
 import slider2 from '../../assets/images/slider2.jpg'
@@ -7,10 +11,7 @@ import slider3 from '../../assets/images/slider3.png'
 import CardComponent from '../../components/CardComponent/CardComponent'
 import * as ProductServices from '../../services/ProductServices'
 import Loading from '../../components/Loading/Loading'
-import { useSelector } from 'react-redux'
-import { useEffect, useState } from 'react'
 import useDebounce from '../../hooks/useDebounce'
-import { useSearchParams } from 'react-router-dom'
 import PaginationComponent from '../../components/PaginationComponent/PaginationComponent'
 
 function HomePage() {
@@ -103,6 +104,31 @@ function HomePage() {
                     )}
                     <div className="pb-5"></div>
                 </div>
+            </div>
+            <div
+                className="fixed bottom-10 right-10 hover:cursor-pointer"
+                onClick={() => {
+                    console.log(process.env.REACT_APP_LINK_MESSAGE_PAGE)
+                    window.open(process.env.REACT_APP_LINK_MESSAGE_PAGE, '_blank')
+                }}>
+                <div
+                    className="relative"
+                    style={{
+                        animation: 'shake 0.7s infinite',
+                        transformOrigin: 'center',
+                    }}>
+                    <FaFacebookMessenger className="text-blue-600" size={50} />
+                    <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-green-500 border-2 border-white"></span>
+                </div>
+
+                <style>
+                    {`@keyframes shake {
+                        0%, 100% { transform: rotate(0deg); }
+                        25% { transform: rotate(5deg); }
+                        50% { transform: rotate(-5deg); }
+                        75% { transform: rotate(3deg); }
+                    }`}
+                </style>
             </div>
         </div>
     )

@@ -105,7 +105,7 @@ const createVNPayPayment = async (newOrder) => {
         });
 
         const paymentUrl = vnpay.buildPaymentUrl({
-            vnp_Amount: newOrder.totalPrice, // nhân 100 vì đơn vị là đồng
+            vnp_Amount: newOrder.totalPrice,
             vnp_IpAddr: "127.0.0.1",
             vnp_TxnRef: txnRef,
             vnp_OrderInfo: `Thanh toan don hang ${txnRef}`,

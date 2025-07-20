@@ -79,8 +79,8 @@ const AdminPage = () => {
     return (
         <>
             <HeaderComponent isHiddenSearch={true} isHiddenCart={true} />
-            <div className="flex">
-                <div className="min-h-screen border-r-[1px] w-72 bg-stone-50 select-none">
+            <div className="flex min-w-[1024px]">
+                <div className="min-h-screen border-r-[1px] w-3/12 max-w-72 bg-stone-50 select-none">
                     {Menus.map((menu, index) => (
                         <div key={index}>
                             <li
@@ -135,7 +135,7 @@ const AdminPage = () => {
                         </div>
                     ))}
                 </div>
-                <div className="p-7 flex-1">{renderPage(keySelected)}</div>
+                <div className="p-7 w-full">{renderPage(keySelected)}</div>
             </div>
         </>
     )
