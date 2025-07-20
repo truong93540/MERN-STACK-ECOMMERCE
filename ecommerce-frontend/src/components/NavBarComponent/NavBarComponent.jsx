@@ -1,6 +1,60 @@
+import { useEffect, useState } from 'react'
 import { StarIcon, StarIconWhite } from '../Icons/Icons'
+import * as ProductServices from '../../services/ProductServices'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 function NavBarComponent() {
+    const navigate = useNavigate()
+    const location = useLocation()
+    const [typeProduct, setTypeProducts] = useState([])
+    const [selectedType, setSelectedType] = useState('')
+
+    const currentSlug = location.pathname.split('/product/')[1] || ''
+
+    const fetchAllTypeProduct = async () => {
+        const res = await ProductServices.getAllType()
+        if (res?.status === 'OK') {
+            setTypeProducts(res?.data)
+        }
+        return res
+    }
+
+    useEffect(() => {
+        fetchAllTypeProduct()
+    }, [])
+
+    useEffect(() => {
+        if (typeProduct.length > 0 && currentSlug) {
+            const matched = typeProduct.find((item) => slugify(item) === currentSlug)
+            if (matched) {
+                setSelectedType(matched)
+            }
+        }
+    }, [typeProduct, currentSlug])
+
+    const slugify = (string) => {
+        const a = 'àáäâãåăæąçćčđďèéěėëêęğǵḧìíïîįłḿǹńňñòóöôœøṕŕřßşśšșťțùúüûǘůűūųẃẍÿýźžż·/_,:;'
+        const b = 'aaaaaaaaacccddeeeeeeegghiiiiilmnnnnooooooprrsssssttuuuuuuuuuwxyyzzz------'
+        const p = new RegExp(a.split('').join('|'), 'g')
+        return string
+            .toString()
+            .toLowerCase()
+            .replace(/á|à|ả|ạ|ã|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/gi, 'a')
+            .replace(/é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ/gi, 'e')
+            .replace(/i|í|ì|ỉ|ĩ|ị/gi, 'i')
+            .replace(/ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ/gi, 'o')
+            .replace(/ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự/gi, 'u')
+            .replace(/ý|ỳ|ỷ|ỹ|ỵ/gi, 'y')
+            .replace(/đ/gi, 'd')
+            .replace(/\s+/g, '-')
+            .replace(p, (c) => b.charAt(a.indexOf(c)))
+            .replace(/&/g, '-and-')
+            .replace(/[^\w\-]+/g, '')
+            .replace(/\-\-+/g, '-')
+            .replace(/^-+/, '')
+            .replace(/-+$/, '')
+    }
+
     const renderContent = (type, options) => {
         switch (type) {
             case 'text':
@@ -8,7 +62,17 @@ function NavBarComponent() {
                     return (
                         <div
                             key={index}
-                            className="text-[#38383D] text-xs font-normal cursor-pointer w-full hover:bg-blue-400 hover:text-white pl-4 pr-3 py-2">
+                            className={`text-xs font-normal cursor-pointer w-full pl-4 pr-3 py-2
+                                ${
+                                    slugify(option) === currentSlug
+                                        ? 'bg-blue-400 text-white'
+                                        : 'text-[#38383D] hover:bg-blue-400 hover:text-white'
+                                }
+                            `}
+                            onClick={() => {
+                                setSelectedType(option)
+                                navigate(`/product/${slugify(option)}`, { state: option })
+                            }}>
                             {option}
                         </div>
                     )
@@ -66,20 +130,8 @@ function NavBarComponent() {
 
     return (
         <div className="bg-white pt-3 rounded">
-            <h4 className="text-[#38383D] text-sm font-medium px-3">Lable</h4>
-            <div className=" mt-2">{renderContent('text', ['Tu lanh', 'TV', 'May giat'])}</div>
-            {/* <div className="flex flex-col gap-3 items-start">
-                {renderContent("checkbox", [
-                    { value: "a", label: "A" },
-                    { value: "b", label: "B" },
-                ])}
-            </div>
-            <div className="flex flex-col gap-3 items-start">
-                {renderContent("star", [3, 4, 5])}
-            </div>
-            <div className="flex flex-col gap-3 items-start">
-                {renderContent("price", ["dưới 40", "trên 50.000"])}
-            </div> */}
+            <h4 className="text-[#38383D] text-sm font-medium px-3">Danh mục</h4>
+            <div className=" mt-2">{renderContent('text', [...typeProduct])}</div>
         </div>
     )
 }
