@@ -82,18 +82,27 @@ function PaymentPage() {
     )
 
     const deliveryMoney = useMemo(() => {
-        if (provisional > 200000) {
+        if (provisional > 0 && provisional < 200000) {
             return 20000
-        } else if (provisional > 0) {
+        } else if (provisional >= 200000 && provisional <= 500000) {
             return 10000
-        } else {
+        } else if (provisional > 500000 || provisional === 0) {
             return 0
         }
     }, [provisional])
 
+    const totalDiscount = useMemo(() => {
+        return order?.orderItemsSelected.reduce((total, item) => {
+            let discount = 0
+            if (item?.discount) {
+                discount = (item?.price * item?.discount) / 100
+            }
+            return total + discount * item.amount
+        }, 0)
+    }, [order?.orderItemsSelected])
     const totalPriceMemo = useMemo(() => {
-        return Number(provisional) + Number(deliveryMoney)
-    }, [provisional, deliveryMoney])
+        return Number(provisional) - Number(totalDiscount) + Number(deliveryMoney)
+    }, [provisional, deliveryMoney, totalDiscount])
 
     const handleChangPaymentMethod = (e) => {
         setPaymentMethod(e.target.value)
@@ -119,7 +128,7 @@ function PaymentPage() {
                     phone: user?.phone,
                     city: user?.city,
                     paymentMethod: paymentMethod,
-                    itemsPrice: provisional,
+                    itemsPrice: totalPriceMemo - deliveryMoney,
                     shippingPrice: deliveryMoney,
                     totalPrice: totalPriceMemo,
                     user: user?.id,
@@ -225,16 +234,17 @@ function PaymentPage() {
             const res = await OrderService.createVNPayPayment(
                 {
                     token: user?.access_token,
-                    orderItem: order?.orderItemsSelected,
+                    orderItems: order?.orderItemsSelected,
                     fullName: user?.name,
                     address: user?.address,
                     phone: user?.phone,
                     city: user?.city,
                     paymentMethod: paymentMethod,
-                    itemsPrice: provisional,
+                    itemsPrice: totalPriceMemo - deliveryMoney,
                     shippingPrice: deliveryMoney,
                     totalPrice: totalPriceMemo,
                     user: user?.id,
+                    email: user?.email,
                 },
                 user?.access_token
             )
@@ -331,21 +341,23 @@ function PaymentPage() {
                                 </span>
                             </div>
                             <div className="text-sm border-t border-b p-4">
-                                <div className="flex justify-between">
+                                <div className="flex justify-between ">
                                     <span>Tạm tính</span>
-                                    <span className="font-bold">{convertPrice(provisional)}</span>
+                                    <span className="font-bold text-red-500">
+                                        {convertPrice(provisional)}
+                                    </span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between mt-1">
                                     <span>Giảm giá</span>
-                                    <span className="font-bold">{`0 %`}</span>
+                                    <span className="font-bold text-red-500">
+                                        {convertPrice(totalDiscount)}
+                                    </span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span>Thuế</span>
-                                    <span className="font-bold">0</span>
-                                </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between mt-1">
                                     <span>Phí giao hàng</span>
-                                    <span className="font-bold">{deliveryMoney}</span>
+                                    <span className="font-bold text-red-500">
+                                        {convertPrice(deliveryMoney)}
+                                    </span>
                                 </div>
                             </div>
                             <div className="flex p-4">

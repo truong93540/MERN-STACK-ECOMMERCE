@@ -103,10 +103,8 @@ function MyOrderPage() {
                                     <div className=" border-t-[1px] mt-3">
                                         {dataItem?.orderItems.map((orderItem, index) => {
                                             return (
-                                                <div
-                                                    className="flex justify-between mt-3"
-                                                    key={index}>
-                                                    <div className="flex ">
+                                                <div className="flex mt-3 items-center" key={index}>
+                                                    <div className="flex w-6/12">
                                                         <img
                                                             src={orderItem?.image}
                                                             alt=""
@@ -116,7 +114,25 @@ function MyOrderPage() {
                                                             {orderItem?.name}
                                                         </span>
                                                     </div>
-                                                    <div>{convertPrice(orderItem?.price)}</div>
+                                                    <div className="w-3/12">
+                                                        Số lượng: {orderItem?.amount}
+                                                    </div>
+                                                    <div className="w-3/12 text-right">
+                                                        <span className="text-base mr-1">
+                                                            {orderItem?.discount
+                                                                ? convertPrice(
+                                                                      (orderItem?.price -
+                                                                          (orderItem?.price *
+                                                                              orderItem?.discount) /
+                                                                              100) *
+                                                                          orderItem?.amount
+                                                                  )
+                                                                : convertPrice(
+                                                                      orderItem?.price *
+                                                                          orderItem?.amount
+                                                                  )}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             )
                                         })}

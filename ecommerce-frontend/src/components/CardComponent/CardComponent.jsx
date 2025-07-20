@@ -24,8 +24,12 @@ function CardComponent(props) {
                 <div className="text-sm font-medium text-[#000000cc] line-clamp-2 h-10">{name}</div>
                 <div className="text-[#ee4d2d] text-xs flex items-center mt-1">
                     <span>₫</span>
-                    <span className="text-base mr-1">{convertPrice(price)}</span>
-                    <span className="px-1 py-[2px] bg-[#FEEEEA]">-{discount || 5}%</span>
+                    <span className="text-base mr-1">
+                        {discount
+                            ? convertPrice(price - (price * discount) / 100)
+                            : convertPrice(price)}
+                    </span>
+                    {discount && <span className="px-1 py-[2px] bg-[#FEEEEA]">-{discount}%</span>}
                 </div>
                 <div className="text-xs flex items-center mt-2">
                     <span>

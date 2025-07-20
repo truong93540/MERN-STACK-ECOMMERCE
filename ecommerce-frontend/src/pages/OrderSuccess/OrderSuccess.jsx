@@ -11,6 +11,7 @@ function OrderSuccess() {
     const [errorMsg, setErrorMsg] = useState('')
     const location = useLocation()
     const { state } = location
+    console.log('state', state)
 
     useEffect(() => {
         let timer
@@ -88,14 +89,28 @@ function OrderSuccess() {
                             </span>
                             <div className="w-7/12 flex items-center justify-between">
                                 <div className="flex items-center grow text-center gap-1">
-                                    <span className="w-4/12">{convertPrice(orderItem?.price)}</span>
+                                    <span className="w-4/12">
+                                        {orderItem?.discount
+                                            ? convertPrice(
+                                                  orderItem?.price -
+                                                      (orderItem?.price * orderItem?.discount) / 100
+                                              )
+                                            : convertPrice(orderItem?.price)}
+                                    </span>
                                     <div className="w-4/12 flex justify-center">
                                         <div className="w-full flex justify-center">
                                             <span>{orderItem?.amount}</span>
                                         </div>
                                     </div>
                                     <span className="w-4/12 text-red-500">
-                                        {convertPrice(orderItem?.price * orderItem?.amount)}
+                                        {orderItem?.discount
+                                            ? convertPrice(
+                                                  (orderItem?.price -
+                                                      (orderItem?.price * orderItem?.discount) /
+                                                          100) *
+                                                      orderItem?.amount
+                                              )
+                                            : convertPrice(orderItem?.price * orderItem?.amount)}
                                     </span>
                                 </div>
                             </div>

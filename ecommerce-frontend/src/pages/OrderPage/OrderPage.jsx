@@ -140,9 +140,19 @@ function OrderPage() {
         }
     }, [provisional])
 
+    const totalDiscount = useMemo(() => {
+        return order?.orderItemsSelected.reduce((total, item) => {
+            let discount = 0
+            if (item?.discount) {
+                discount = (item?.price * item?.discount) / 100
+            }
+            return total + discount * item.amount
+        }, 0)
+    }, [order?.orderItemsSelected])
+
     const totalPriceMemo = useMemo(() => {
-        return Number(provisional) + Number(deliveryMoney)
-    }, [provisional, deliveryMoney])
+        return Number(provisional) - Number(totalDiscount) + Number(deliveryMoney)
+    }, [provisional, deliveryMoney, totalDiscount])
 
     const handleAddCard = () => {
         if (!order?.orderItemsSelected.length) {
@@ -273,6 +283,7 @@ function OrderPage() {
                             </div>
                         </div>
 
+                        {console.log('order', order)}
                         {order?.orderItems.map((orderItem) => {
                             return (
                                 <div
@@ -415,19 +426,21 @@ function OrderPage() {
                             <div className="text-sm border-t border-b p-4">
                                 <div className="flex justify-between">
                                     <span>Tạm tính</span>
-                                    <span className="font-bold">{convertPrice(provisional)}</span>
+                                    <span className="font-bold text-red-500">
+                                        {convertPrice(provisional)}
+                                    </span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between mt-1">
                                     <span>Giảm giá</span>
-                                    <span className="font-bold">{`0 %`}</span>
+                                    <span className="font-bold text-red-500">
+                                        {convertPrice(totalDiscount)}
+                                    </span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span>Thuế</span>
-                                    <span className="font-bold">0</span>
-                                </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between mt-1">
                                     <span>Phí giao hàng</span>
-                                    <span className="font-bold">{deliveryMoney}</span>
+                                    <span className="font-bold text-red-500">
+                                        {convertPrice(deliveryMoney)}
+                                    </span>
                                 </div>
                             </div>
                             <div className="flex p-4">

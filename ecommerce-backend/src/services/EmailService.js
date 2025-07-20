@@ -33,8 +33,6 @@ const sendEmailCreateOrder = (email, orderItems) => {
             html: `<div><b>Bạn đã đặt hàng thành công</b></div>${listItem}`, // HTML body
             attachments: attachImage,
         });
-
-        console.log("Message sent:", info.messageId);
     })();
 };
 

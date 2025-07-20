@@ -27,7 +27,7 @@ const createOrder = async (req, res) => {
             !phone ||
             !user
         ) {
-            res.status(200).json({
+            return res.status(200).json({
                 status: "ERR",
                 message: "The input is required",
             });
@@ -44,7 +44,7 @@ const createOrder = async (req, res) => {
 const createVNPayPayment = async (req, res) => {
     try {
         const {
-            orderItem,
+            orderItems,
             paymentMethod,
             itemsPrice,
             shippingPrice,
@@ -57,7 +57,7 @@ const createVNPayPayment = async (req, res) => {
         } = req.body;
 
         if (
-            !orderItem ||
+            !orderItems ||
             !paymentMethod ||
             !itemsPrice ||
             !shippingPrice ||
@@ -68,7 +68,7 @@ const createVNPayPayment = async (req, res) => {
             !phone ||
             !user
         ) {
-            res.status(200).json({
+            return res.status(200).json({
                 status: "ERR",
                 message: "The input is required",
             });

@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { BiSolidDiscount } from 'react-icons/bi'
 
 import { AddIcon, RemoveIcon, StarIcon } from '../Icons/Icons'
 import * as ProductServices from '../../services/ProductServices'
@@ -12,17 +13,20 @@ import { convertPrice, initFacebookSDK } from '../../util'
 import * as message from '../../components/Message/Message'
 import LikeButtonComponent from '../LikeButtonComponent/LikeButtonComponent'
 import CommentComponent from '../CommentComponent/CommentComponent'
+import Tippy from '@tippyjs/react'
 
 function ProductDetailsComponent({ idProduct }) {
     const [numProduct, setNumProduct] = useState(1)
+    const [successMsg, setSuccessMsg] = useState('')
+    const [errorMsg, setErrorMsg] = useState('')
+
     const user = useSelector((state) => state.user)
     const order = useSelector((state) => state.order)
 
-    const [successMsg, setSuccessMsg] = useState('')
-    const [errorMsg, setErrorMsg] = useState('')
     const navigate = useNavigate()
     const location = useLocation()
     const dispatch = useDispatch()
+    const iconDiscountRef = useRef()
 
     const fetchGetProductDetails = async (id) => {
         if (id) {
@@ -179,10 +183,29 @@ function ProductDetailsComponent({ idProduct }) {
                                 | Đã bán: {productDetails?.sold}
                             </span>
                         </div>
-                        <div className="bg-[#FAFAFA] rounded ">
-                            <h1 className="text-[32px] leading-10 font-medium p-[10px] mt-[10px] ">
-                                ₫ {convertPrice(productDetails?.price)}
+                        <div className="bg-[#FAFAFA] rounded flex items-center">
+                            <h1 className="text-[32px] leading-10 font-medium p-[10px] mt-[10px] text-red-500">
+                                ₫{' '}
+                                {productDetails?.discount
+                                    ? convertPrice(
+                                          productDetails?.price -
+                                              (productDetails?.price * productDetails?.discount) /
+                                                  100
+                                      )
+                                    : convertPrice(productDetails?.price)}
                             </h1>
+                            {productDetails?.discount && (
+                                <div className="flex items-end">
+                                    <Tippy content={`-${productDetails.discount}%`}>
+                                        <span className="hover:cursor-pointer">
+                                            <BiSolidDiscount className="text-red-500" size={20} />
+                                        </span>
+                                    </Tippy>
+                                    <span className="text-red-500 ml-1 line-through ml-2">
+                                        {`(₫${convertPrice(productDetails.price)})`}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                         <div>
                             <span>Giao đến </span>
