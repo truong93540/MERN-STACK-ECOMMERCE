@@ -1,4 +1,13 @@
-function InputComponent({ size, placeholder, bordered, style, className, onChange, ...rests }) {
+function InputComponent({
+    size,
+    placeholder,
+    bordered,
+    style,
+    className,
+    onChange,
+    value = '',
+    ...rests
+}) {
     return (
         <input
             size={size}
@@ -9,7 +18,7 @@ function InputComponent({ size, placeholder, bordered, style, className, onChang
             id={rests.id}
             onChange={onChange}
             className={className}
-            value={''}
+            value={value}
             {...rests}
         />
     )

@@ -65,6 +65,7 @@ function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
                             textButton="Tìm kiếm"
                             placeholder="Tìm kiếm tại đây"
                             onChange={onSearch}
+                            value={search}
                         />
                     </div>
                 )}
