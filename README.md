@@ -103,7 +103,6 @@ ecommerce-mern/
 
 ### 1️⃣ Clone repository
 
-```bash
 git clone https://github.com/truong93540/MERN-ecommerce.git
 cd MERN-ecommerce
 
@@ -124,7 +123,6 @@ MAIL_PASSWORD=your_mail_password
 MAIL_ACCOUNT=your_email
 
 Run backend: npm start
-
 
 3️⃣ Frontend setup
 cd commerce-frontend
@@ -150,4 +148,3 @@ This project is licensed under the MIT License - you are free to use, modify, an
 
 👨‍💻 Author: Nguyễn Văn Trường
 Contact Email: truong93540@gmail.com
-```
