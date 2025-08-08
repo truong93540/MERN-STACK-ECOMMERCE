@@ -128,7 +128,11 @@ MAIL_PASSWORD=your_mail_password
 MAIL_ACCOUNT=your_email
 ```
 
-Run backend: npm start
+Run backend:
+
+```
+npm start
+```
 
 3️⃣ Frontend setup
 
@@ -146,7 +150,11 @@ REACT_APP_IS_LOCAL=true
 REACT_APP_LINK_MESSAGE_PAGE=https://m.me/your_page_id
 ```
 
-Run frontend: npm start
+Run frontend:
+
+```
+npm start
+```
 
 ---
 
