@@ -1,11 +1,11 @@
-import { SearchIcon } from "../Icons/Icons";
-import InputComponent from "../InputComponent/InputComponent";
-import ButtonComponent from "../ButtonComponent/ButtonComponent";
+import { SearchIcon } from '../Icons/Icons'
+import InputComponent from '../InputComponent/InputComponent'
+import ButtonComponent from '../ButtonComponent/ButtonComponent'
 
 function ButtonInputSearch(props) {
-    const { textButton, placeholder, ...inputProps } = props;
+    const { textButton, placeholder, ...inputProps } = props
     return (
-        <form action="" method="get" className="flex w-full">
+        <form action="" method="get" className="flex w-full" onSubmit={(e) => e.preventDefault()}>
             <label htmlFor="default-search"></label>
             <InputComponent
                 type="text"
@@ -22,7 +22,7 @@ function ButtonInputSearch(props) {
                 icon={<SearchIcon className="mt-[1px]" />}
             />
         </form>
-    );
+    )
 }
 
-export default ButtonInputSearch;
+export default ButtonInputSearch

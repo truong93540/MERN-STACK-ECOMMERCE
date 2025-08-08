@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import Menu from '../Popper/Menu/Menu'
 import { useEffect, useState } from 'react'
 import { searchProduct } from '../../redux/slides/productSlide'
-import Loading from '../Loading/Loading'
 
 function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
     const [userName, setUserName] = useState('')
