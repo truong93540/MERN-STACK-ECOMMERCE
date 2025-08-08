@@ -107,10 +107,15 @@ git clone https://github.com/truong93540/MERN-ecommerce.git
 cd MERN-ecommerce
 
 2️⃣ Backend setup:
+
+```
 cd ecommerce-backend
 npm install
+```
 
 Create a .env file in ecommerce-backend/:
+
+```
 MONGO_DB=your_mongodb_connection_string
 PORT=3002
 URL_BACKEND=http://localhost:3002
@@ -121,18 +126,25 @@ TMNCODE=your_vnpay_tmncode
 SECURESECRET=your_vnpay_secure_secret
 MAIL_PASSWORD=your_mail_password
 MAIL_ACCOUNT=your_email
+```
 
 Run backend: npm start
 
 3️⃣ Frontend setup
+
+```
 cd commerce-frontend
 npm install
+```
 
 Create a .env file in ecommerce-frontend/:
+
+```
 REACT_APP_API_URL_BACKEND=http://localhost:3002/api
 REACT_APP_FB_ID=your_facebook_app_id
 REACT_APP_IS_LOCAL=true
 REACT_APP_LINK_MESSAGE_PAGE=https://m.me/your_page_id
+```
 
 Run frontend: npm start
 
